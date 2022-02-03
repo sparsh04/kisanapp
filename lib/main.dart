@@ -2,11 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:core';
-import 'package:my_kisan/Component/bottom_bar.dart';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/routes.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
-import 'package:my_kisan/screens/Signup_Screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

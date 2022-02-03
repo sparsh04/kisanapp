@@ -7,6 +7,7 @@ import 'package:my_kisan/screens/Custom_product.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
 import 'package:my_kisan/screens/home_screen.dart';
 import 'package:my_kisan/screens/order_placed.dart';
+import 'package:my_kisan/screens/orders.dart';
 import 'package:my_kisan/screens/payment_screen.dart';
 import 'package:my_kisan/screens/profile_screen.dart';
 import 'package:my_kisan/screens/wallet.dart';
@@ -101,8 +102,8 @@ class _MainDrawerState extends State<MainDrawer> {
       ),
       ListTile(
         onTap: () {
-          // Navigator.of(context)
-          //     .push(MaterialPageRoute(builder: (context) => PaymentScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => Orders()));
         },
         leading: Icon(
           Icons.card_travel,

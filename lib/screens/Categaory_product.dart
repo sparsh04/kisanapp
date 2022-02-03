@@ -200,12 +200,13 @@ class _CategoryProductState extends State<CategoryProduct> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: 0,
+                    childAspectRatio: 0.9,
                   ),
-                  itemCount: snapshot.data!.docs.length,
+                  // itemCount: snapshot.data!.docs.length,
+                  itemCount: 20,
                   itemBuilder: (BuildContext context, int index) {
-                    // DocumentSnapshot? ds = snapshot.data.docs[index];
-                    Map<String, dynamic> map = snapshot.data!.docs[index].data()
-                        as Map<String, dynamic>;
+                    Map<String, dynamic> map =
+                        snapshot.data!.docs[0].data() as Map<String, dynamic>;
                     print(map['Name']);
                     return GestureDetector(
                       onTap: () {},
