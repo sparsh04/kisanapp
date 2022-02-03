@@ -3,11 +3,11 @@ import 'package:my_kisan/constant.dart';
 
 class SearchBar extends StatelessWidget {
   const SearchBar({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final Height = MediaQuery.of(context).size.height;
     final Width = MediaQuery.of(context).size.width;
+
     return SafeArea(
       child: Scaffold(
           body: SingleChildScrollView(

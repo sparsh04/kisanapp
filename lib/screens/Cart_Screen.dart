@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/screens/payment_screen.dart';
-import 'package:my_kisan/screens/rajorpayscreen.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
+//import ;'package:my_kisan/screens/rajorpayscreen.dart'
+//import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CartScreen extends StatefulWidget {
   static String routName = "/cart_screen";
@@ -16,8 +16,8 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  var _razorpay;
   int total = 0;
+  var items;
   var cartstream;
 
   @override
@@ -25,46 +25,8 @@ class _CartScreenState extends State<CartScreen> {
     WidgetsFlutterBinding.ensureInitialized();
     getcart();
     super.initState();
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _razorpay.clear();
-  }
-
-  // void openCheckout() async {
-
-  //   };
-
-  //   try {
-  //     razorpay.open(options);
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text(e.toString())));
-  //   }
-  // }
-
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Payment successfull")));
-  }
-
-  void _handlePaymentError(PaymentFailureResponse response) {
-    // Do something when payment fails
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Payment Failed")));
-  }
-
-  void _handleExternalWallet(ExternalWalletResponse response) {
-    // Do something when an external wallet was selected
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("External Wallet selected")));
-  }
   //
 
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -72,8 +34,12 @@ class _CartScreenState extends State<CartScreen> {
   getcart() async {
     this.cartstream = await getusercart();
     int temp = await getTotal();
+    // int temp = await getTotal();
+    // int temp = await getTotal();
+    List tempitems = await getallitems();
     setState(() {
       total = temp;
+      items = tempitems;
     });
   }
 
@@ -86,8 +52,10 @@ class _CartScreenState extends State<CartScreen> {
         .update({"quantity": quantity + 1});
 
     int temp = await getTotal();
+    List tempitems = await getallitems();
     setState(() {
       total = temp;
+      items = tempitems;
     });
   }
 
@@ -109,8 +77,10 @@ class _CartScreenState extends State<CartScreen> {
     }
 
     int temp = await getTotal();
+    List tempitems = await getallitems();
     setState(() {
       total = temp;
+      items = tempitems;
     });
   }
 
@@ -153,348 +123,360 @@ class _CartScreenState extends State<CartScreen> {
     return total;
   }
 
+  Future<List> getallitems() async {
+    List items = [];
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser!.phoneNumber)
+        .collection('cart')
+        .get()
+        .then((value) {
+      List<DocumentSnapshot> ls = value.docs;
+      ls.forEach((element) {
+        String name = element['name'];
+        int quantity = element['quantity'];
+        var a = name + " x " + '${quantity}';
+        items.add(a);
+        // items.add(a);
+      });
+    });
+
+    print(items);
+
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Height = MediaQuery.of(context).size.height;
     final Width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: greencolor,
-        title: Text("Cart"),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              StreamBuilder(
-                  stream: cartstream,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.active) {
-                      return Container(
-                        alignment: Alignment.center,
-                        // padding: EdgeInsets.only(left: 10, right: 10),
-                        // decoration: BoxDecoration(
-                        //   border: Border.all(color: Colors.black),
-                        // ),
-                        height: snapshot.data!.docs.length * 80.00,
-                        width: double.infinity,
-                        child: ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            Map<String, dynamic> map =
-                                snapshot.data!.docs[index].data()
-                                    as Map<String, dynamic>;
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: greencolor,
+          title: Text("Cart"),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                StreamBuilder(
+                    stream: cartstream,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        return Container(
+                          alignment: Alignment.center,
+                          height: snapshot.data!.docs.length * 80.00,
+                          width: double.infinity,
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              Map<String, dynamic> map =
+                                  snapshot.data!.docs[index].data()
+                                      as Map<String, dynamic>;
 
-                            // total = total + map['quantity'] * map['price'];
-                            return Container(
-                              padding: EdgeInsets.only(bottom: 10),
-                              alignment: Alignment.center,
-                              // decoration: BoxDecoration(
-                              //   border: Border.all(color: Colors.black),
-                              // ),
-                              height: 80,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    child:
-                                        Image.asset('assets/images/nonveg.png'),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 30, left: 20),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(map['name'],
-                                            style: TextStyle(fontSize: 18)),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text("in " + map['category'],
-                                            style: subheadingstyle()),
-                                      ],
+                              // total = total + map['quantity'] * map['price'];
+                              return Container(
+                                padding: EdgeInsets.only(bottom: 10),
+                                alignment: Alignment.center,
+                                // decoration: BoxDecoration(
+                                //   border: Border.all(color: Colors.black),
+                                // ),
+                                height: 80,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(top: 20),
+                                      child: Image.asset(
+                                          'assets/images/nonveg.png'),
                                     ),
-                                  ),
-                                  Spacer(),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    // padding: EdgeInsets.only(
-                                    //     left: 5, right: 5, top: 5, bottom: 5),
-                                    decoration: BoxDecoration(
-                                        color: orangecolor.withOpacity(0.2),
-                                        borderRadius: BorderRadius.circular(5)),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(top: 30, left: 20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(map['name'],
+                                              style: TextStyle(fontSize: 18)),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text("in " + map['category'],
+                                              style: subheadingstyle()),
+                                        ],
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 20),
+                                      // padding: EdgeInsets.only(
+                                      //     left: 5, right: 5, top: 5, bottom: 5),
+                                      decoration: BoxDecoration(
+                                          color: orangecolor.withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      child: Row(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              addquantity(map['productid'],
+                                                  map['quantity']);
+                                            },
+                                            child: Icon(
+                                              Icons.add_circle,
+                                              color: orangecolor,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            '${map['quantity']}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              minusquantity(map['productid'],
+                                                  map['quantity']);
+                                            },
+                                            child: Icon(Icons.remove_circle,
+                                                color: orangecolor),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 20),
+                                        child: Text(
+                                          "₹" +
+                                              '${map['quantity'] * map['price']}',
+                                          style: headingstyle(),
+                                        )),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      } else
+                        return Container();
+                    }),
+                SizedBox(
+                  height: 10,
+                ),
+                ExpandableNotifier(
+                    child: Padding(
+                  padding: const EdgeInsets.only(right: 180),
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.white,
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      children: <Widget>[
+                        ScrollOnExpand(
+                          scrollOnExpand: true,
+                          scrollOnCollapse: false,
+                          child: ExpandablePanel(
+                            theme: const ExpandableThemeData(
+                              iconColor: Colors.black,
+                              headerAlignment:
+                                  ExpandablePanelHeaderAlignment.center,
+                            ),
+                            header: InkWell(
+                              onTap: () {},
+                              child: Container(
+                                color: Colors.white,
+                                child: Padding(
+                                    padding: EdgeInsets.all(10),
                                     child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
-                                        InkWell(
-                                          onTap: () {
-                                            addquantity(map['productid'],
-                                                map['quantity']);
-                                          },
-                                          child: Icon(
-                                            Icons.add_circle,
-                                            color: orangecolor,
+                                        Container(),
+                                        Text(
+                                          "Customize",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600],
                                           ),
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          '${map['quantity']}',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            minusquantity(map['productid'],
-                                                map['quantity']);
-                                          },
-                                          child: Icon(Icons.remove_circle,
-                                              color: orangecolor),
-                                        ),
                                       ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Container(
-                                      margin: EdgeInsets.only(top: 20),
-                                      child: Text(
-                                        "₹" +
-                                            '${map['quantity'] * map['price']}',
-                                        style: headingstyle(),
-                                      )),
-                                ],
+                                    )),
                               ),
-                            );
-                          },
+                            ),
+                            collapsed: Container(),
+                            expanded: InkWell(
+                              onTap: () {},
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 25,
+                                width: 100,
+                                margin: EdgeInsets.only(left: 10, bottom: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: orangecolor,
+                                    )),
+                                child: Text(
+                                  "Add new Item",
+                                  style: TextStyle(color: orangecolor),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      );
-                    } else
-                      return Container();
-                  }),
-              SizedBox(
-                height: 10,
-              ),
-              ExpandableNotifier(
-                  child: Padding(
-                padding: const EdgeInsets.only(right: 180),
-                child: Card(
-                  elevation: 0,
-                  color: Colors.white,
-                  clipBehavior: Clip.antiAlias,
+                      ],
+                    ),
+                  ),
+                )),
+                SizedBox(
+                  height: 30,
+                ),
+                PaymentDetail(
+                  prodDiscount: '₹' + '${'total'}',
+                  totalAmt: '₹00.00',
+                  totalMrp: '₹310.00',
+                  total: total,
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
-                    children: <Widget>[
-                      ScrollOnExpand(
-                        scrollOnExpand: true,
-                        scrollOnCollapse: false,
-                        child: ExpandablePanel(
-                          theme: const ExpandableThemeData(
-                            iconColor: Colors.black,
-                            headerAlignment:
-                                ExpandablePanelHeaderAlignment.center,
-                          ),
-                          header: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              color: Colors.white,
-                              child: Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(),
-                                      Text(
-                                        "Customize",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                          ),
-                          collapsed: Container(),
-                          expanded: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 25,
-                              width: 100,
-                              margin: EdgeInsets.only(left: 10, bottom: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: orangecolor,
-                                  )),
-                              child: Text(
-                                "Add new Item",
-                                style: TextStyle(color: orangecolor),
+                    children: [
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Any request for the resturant",
+                            style: TextStyle(color: Colors.grey[600]),
+                          )),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            alignment: Alignment.center,
+                            height: 35,
+                            width: 150,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: orangecolor),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: TextField(
+                              style: TextStyle(fontSize: 14),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Enter Coupan code",
                               ),
                             ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: MaterialButton(
+                              height: Height / 25,
+                              minWidth: Width * 0.4 - 20,
+                              onPressed: () {},
+                              color: Color(0xfffeda704),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Text(
+                                "Apply",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                "Address",
+                                style: TextStyle(
+                                    color: textcolorblack,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              )
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 30),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "CHANGE",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(
+                        thickness: 2,
+                        indent: 300,
+                        endIndent: 30,
+                      ),
+                      Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text("201,Karvali Road Bhiwandi"))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: MaterialButton(
+                          height: Height / 22,
+                          minWidth: Width * 0.8,
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    PaymentScreen(total: total, items: items)));
+                          },
+                          color: Color(0xfffeda704),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(
+                            "Make Payment",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              )),
-              SizedBox(
-                height: 30,
-              ),
-              PaymentDetail(
-                prodDiscount: '₹' + '${'total'}',
-                totalAmt: '₹00.00',
-                totalMrp: '₹310.00',
-                total: total,
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: [
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Any request for the resturant",
-                          style: TextStyle(color: Colors.grey[600]),
-                        )),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          alignment: Alignment.center,
-                          height: 35,
-                          width: 150,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: orangecolor),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: TextField(
-                            style: TextStyle(fontSize: 14),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Enter Coupan code",
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: MaterialButton(
-                            height: Height / 25,
-                            minWidth: Width * 0.4 - 20,
-                            onPressed: () {},
-                            color: Color(0xfffeda704),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              "Apply",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              "Address",
-                              style: TextStyle(
-                                  color: textcolorblack,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
-                            )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 30),
-                          child: Column(
-                            children: [
-                              Text(
-                                "CHANGE",
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Divider(
-                      thickness: 2,
-                      indent: 300,
-                      endIndent: 30,
-                    ),
-                    Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("201,Karvali Road Bhiwandi"))
-                      ],
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: MaterialButton(
-                        height: Height / 22,
-                        minWidth: Width * 0.8,
-                        onPressed: () {
-                          var options = {
-                            'key': 'rzp_test_Mqukymbnx3hIYA',
-                            'amount': total,
-                            'name': 'Kissan App',
-                            'description': 'Cart Payment',
-                            'timeout': 60,
-                            'prefil': {
-                              'contact': _auth.currentUser!.phoneNumber,
-                              'email': ""
-                            },
-                            "external": {
-                              "wallets": {"paytm"},
-                            }
-                          };
-                          _razorpay.open(options);
-                        },
-                        color: Color(0xfffeda704),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Text(
-                          "Make Payment",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

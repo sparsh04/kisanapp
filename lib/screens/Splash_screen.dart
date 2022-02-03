@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_kisan/Component/bottom_bar.dart';
-import 'package:my_kisan/screens/home_screen.dart';
-import 'package:my_kisan/screens/Login_Screen.dart';
 
 void main() {
   runApp(SplashScreen());

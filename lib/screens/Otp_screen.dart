@@ -116,27 +116,6 @@ class _OtpScreenState extends State<OtpScreen> {
                   SizedBox(
                     height: 50,
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Column(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Container(
-
-                  //           // height: Height / 20,
-                  //           // width: Width * 0.6+10,
-                  //           // color: Colors.red,
-
-                  //           ),
-                  //       Divider(
-                  //         thickness: 1,
-                  //         color: Colors.black,
-                  //         endIndent: 50,
-                  //         indent: 52,
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.only(left: 10),
                     child: Column(
@@ -188,33 +167,6 @@ class _OtpScreenState extends State<OtpScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  // Container(
-                  //   //  margin: EdgeInsets.only(top: 35),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Text(
-                  //         "Don't have an account?",
-                  //         style: TextStyle(
-                  //             fontWeight: FontWeight.w500, color: orangecolor),
-                  //       ),
-                  //       GestureDetector(
-                  //         child: Text(
-                  //           "  Click here",
-                  //           style: TextStyle(
-                  //               fontSize: 16,
-                  //               fontWeight: FontWeight.bold,
-                  //               color: orangecolor),
-                  //         ),
-                  //         onTap: () {
-                  //           Navigator.push(context,
-                  //           MaterialPageRoute(builder: (context)=>SignupScreen()),
-                  //           );
-                  //         },
-                  //       ),
-                  //     ],
-                  //   ),
-                  // )
                 ],
               ),
             ),

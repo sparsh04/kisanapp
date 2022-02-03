@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:expandable/expandable.dart';
 import 'package:my_kisan/screens/CustomCard.dart';
 
 class ProductDetail extends StatefulWidget {
   static String routName = "/product_detail";
+  var map;
+  ProductDetail({required this.map});
   @override
   _ProductDetailState createState() => _ProductDetailState();
 }
@@ -37,10 +38,7 @@ class _ProductDetailState extends State<ProductDetail>
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
-
-                labelPadding: EdgeInsets.only(top: 10, right: 10),
                 // indicatorColor: Colors.black,
-                indicatorSize: TabBarIndicatorSize.label,
                 indicator: UnderlineTabIndicator(
                   borderSide: BorderSide(color: Colors.black, width: 1.5),
                   //  insets: EdgeInsets.fromLTRB(50.0, 0.0, 50.0, 40.0),
@@ -133,31 +131,33 @@ class Card1 extends StatelessWidget {
                 collapsed: Container(),
                 expanded: Column(
                   children: [
-                    Text("1"),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
                     SizedBox(
                       height: 20,
                     ),
@@ -240,31 +240,42 @@ class _Card2State extends State<Card2> {
                 collapsed: Container(),
                 expanded: Column(
                   children: [
-                    Text("2"),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
                   ],
                 ),
                 builder: (_, collapsed, expanded) {
@@ -344,31 +355,33 @@ class _Card3State extends State<Card3> {
                   ),
                   collapsed: Container(),
                   expanded: Column(children: [
-                    Text("3"),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
-                    // CustomeProductCard(
-                    //   image: "assets/images/vegetabl.png",
-                    //   name: "Angara Chilly",
-                    //   title: 'in Starter',
-                    //   price: '₹ 310',
-                    // ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
+                    CustomeProductCard(
+                      image: "assets/images/vegetabl.png",
+                      name: "Angara Chilly",
+                      title: 'in Starter',
+                      price: '₹ 310',
+                      index: 1,
+                      map: null,
+                      productid: "1",
+                    ),
                   ]),
                   builder: (_, collapsed, expanded) {
                     return Expandable(

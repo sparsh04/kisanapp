@@ -117,6 +117,7 @@ class _MainDrawerState extends State<MainDrawer> {
       ),
       ListTile(
         onTap: () {
+          // Navigator.pop(context);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => MyWallet()));
           //  Navigator.pushNamed(context, MyWallet.routName);
@@ -131,21 +132,21 @@ class _MainDrawerState extends State<MainDrawer> {
           style: new TextStyle(fontSize: 16.0, color: whitecolors),
         ),
       ),
-      ListTile(
-        onTap: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
-        },
-        leading: Icon(
-          Icons.person,
-          size: 30,
-          color: Colors.white,
-        ),
-        title: Text(
-          "Profile",
-          style: new TextStyle(fontSize: 16.0, color: whitecolors),
-        ),
-      ),
+      // ListTile(
+      //   onTap: () {
+      //     Navigator.of(context)
+      //         .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+      //   },
+      //   leading: Icon(
+      //     Icons.person,
+      //     size: 30,
+      //     color: Colors.white,
+      //   ),
+      //   title: Text(
+      //     "Profile",
+      //     style: new TextStyle(fontSize: 16.0, color: whitecolors),
+      //   ),
+      // ),
       ListTile(
         onTap: () async {
           await FirebaseAuth.instance.signOut();

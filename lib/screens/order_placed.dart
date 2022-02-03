@@ -15,10 +15,6 @@ class _OrderPalcedState extends State<OrderPalced> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Order Placed"),
-        leading: Icon(
-          Icons.arrow_back,
-          color: whitecolors,
-        ),
       ),
       body: Column(
         children: [
@@ -56,51 +52,51 @@ class _OrderPalcedState extends State<OrderPalced> {
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(top: 50),
-            height: 80,
-            width: double.infinity,
-            decoration: BoxDecoration(color: whitecolors, boxShadow: [
-              BoxShadow(
-                  offset: Offset(0, 10),
-                  blurRadius: 33,
-                  color: Color(0xffd3d3d3).withOpacity(.90))
-            ]),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10, right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: Column(
-                      children: [
-                        Text("1 Item| ₹ 310",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w500)),
-                        Text(
-                          "Extra charges may apply",
-                          style: TextStyle(color: Colors.grey),
-                        )
-                      ],
-                    ),
-                  ),
-                  MaterialButton(
-                    height: screenHeight(context) / 22,
-                    minWidth: screenWidth(context) * 0.3,
-                    onPressed: () {},
-                    color: Color(0xfffeda704),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text(
-                      "CheckOut",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
+          // Container(
+          //   margin: EdgeInsets.only(top: 50),
+          //   height: 80,
+          //   width: double.infinity,
+          //   decoration: BoxDecoration(color: whitecolors, boxShadow: [
+          //     BoxShadow(
+          //         offset: Offset(0, 10),
+          //         blurRadius: 33,
+          //         color: Color(0xffd3d3d3).withOpacity(.90))
+          //   ]),
+          //   child: Padding(
+          //     padding: const EdgeInsets.only(left: 10, right: 20),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //       children: [
+          //         // Padding(
+          //         //   padding: const EdgeInsets.only(top: 30),
+          //         //   child: Column(
+          //         //     children: [
+          //         //       Text("1 Item| ₹ 310",
+          //         //           style: TextStyle(
+          //         //               fontSize: 18, fontWeight: FontWeight.w500)),
+          //         //       Text(
+          //         //         "Extra charges may apply",
+          //         //         style: TextStyle(color: Colors.grey),
+          //         //       )
+          //         //     ],
+          //         //   ),
+          //         // ),
+          //         // MaterialButton(
+          //         //   height: screenHeight(context) / 22,
+          //         //   minWidth: screenWidth(context) * 0.3,
+          //         //   onPressed: () {},
+          //         //   color: Color(0xfffeda704),
+          //         //   shape: RoundedRectangleBorder(
+          //         //       borderRadius: BorderRadius.circular(10)),
+          //         //   child: Text(
+          //         //     "CheckOut",
+          //         //     style: TextStyle(color: Colors.white, fontSize: 16),
+          //         //   ),
+          //         // ),
+          //       ],
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

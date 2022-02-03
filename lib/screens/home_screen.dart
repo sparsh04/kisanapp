@@ -15,7 +15,6 @@ import 'package:my_kisan/screens/notification_screen.dart';
 import 'package:my_kisan/screens/product_details.dart';
 import 'package:my_kisan/size_config.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '';
 
 class HomeScreen extends StatefulWidget {
   static String routName = "/home_screen";
@@ -31,7 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
       position,
       location,
       address,
-      carttotal;
+      carttotal,
+      cartitem,
+      resturantstream;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getCcategories() async {
@@ -45,6 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getNotifications() async {
     notificationstream = await getuserNotifications();
+    setState(() {});
+  }
+
+  getuserresturant() async {
+    resturantstream = await getresturants();
     setState(() {});
   }
 
@@ -74,12 +80,17 @@ class _HomeScreenState extends State<HomeScreen> {
     await getcategories();
     await getNotifications();
     await getCcarttotal();
+    await getuser();
+    await getuserresturant();
   }
 
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     doThisOnLaunch();
+    setState(() {
+      this.cartitem = getuser();
+    });
     super.initState();
   }
 
@@ -97,6 +108,22 @@ class _HomeScreenState extends State<HomeScreen> {
         .doc(_auth.currentUser!.phoneNumber)
         .collection("cart")
         .snapshots();
+  }
+
+  Future<Stream<QuerySnapshot>> getresturants() async {
+    return FirebaseFirestore.instance.collection("Resturants").snapshots();
+  }
+
+  Future<int> getuser() async {
+    final userdoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
+        .get();
+
+    final userdata = userdoc.data();
+    print(userdata);
+    var cartitems = userdata!['totalitems'];
+    return cartitems;
   }
 
   Widget Offersbody({
@@ -446,16 +473,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ]),
-            RestaurantCard(
-              image: "assets/images/hotelbanner.png",
-              resturantname: 'Rolex Hotel',
-              submenus: 'Chinease',
-              ontap: () {
-                // Navigator.pushNamed(context, ProductDetail.routName);
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProductDetail()));
-              },
-            ),
+            //   Container(
+            //   height: 300,
+            //    child:
+            StreamBuilder(
+                stream: resturantstream,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  print(resturantstream);
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    return Container(
+                      // alignment: Alignment.center,
+                      height: snapshot.data!.docs.length * 120.00,
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Map<String, dynamic> map = snapshot.data!.docs[index]
+                              .data() as Map<String, dynamic>;
+                          return RestaurantCard(
+                            image: map['imgurl'],
+                            resturantname: map['name'],
+                            submenus: map['style'],
+                            ontap: () {
+                              // Navigator.pushNamed(context, ProductDetail.routName);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      ProductDetail(map: map)));
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                }),
+            //  ),
           ]),
         ));
   }
@@ -494,13 +546,28 @@ class RestaurantCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
             children: [
+              // SizedBox(
+              //     height: screenHeight(context) * 0.15,
+              //     child: Image.network(image)),
+              Container(
+                // margin: EdgeInsets.only(left: 15, top: 10),
+                margin: EdgeInsets.all(10),
+                height: MediaQuery.of(context).size.height / 12,
+                width: MediaQuery.of(context).size.height * 0.1 - 10,
+                // color: Colors.red,
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage(image),
+                ),
+              ),
               SizedBox(
-                  height: screenHeight(context) * 0.15,
-                  child: Image.asset(image)),
+                width: 7,
+              ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Rolex Hotel",
+                    resturantname,
                     style: headingstyle(),
                   ),
                   SizedBox(
@@ -533,7 +600,7 @@ class RestaurantCard extends StatelessWidget {
           color: Colors.red.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20)),
       child: Text(
-        "chinease",
+        submenus,
         style: TextStyle(color: Colors.red, fontSize: 12),
       ),
     );

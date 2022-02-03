@@ -21,3 +21,6 @@ TextStyle subheadingstyle() {
     fontSize: 12,
   );
 }
+
+//hide keyboard
+void hideKeyboard(context) => FocusScope.of(context).requestFocus(FocusNode());
