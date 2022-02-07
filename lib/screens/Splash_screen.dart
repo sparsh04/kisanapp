@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_kisan/Component/bottom_bar.dart';
+import 'package:my_kisan/screens/Login_Screen.dart';
 
 void main() {
   runApp(SplashScreen());
@@ -14,20 +16,41 @@ class SplashScreen extends StatefulWidget {
 }
 
 class StartState extends State<SplashScreen> {
+  String? currentuser;
   @override
   void initState() {
     super.initState();
-    startTime();
+    // startTime();
   }
 
-  startTime() async {
-    var duration = Duration(seconds: 4);
-    return new Timer(duration, route);
-  }
-
-  route() {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => BottomBar(0)));
+  _onlaund() async {
+    Timer(Duration(seconds: 2), () {
+      try {
+        currentuser = FirebaseAuth.instance.currentUser!.uid;
+        if (currentuser == null) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LoginScreen(),
+              ),
+              (route) => false);
+        } else if (currentuser != null) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BottomBar(0),
+              ),
+              (route) => false);
+        }
+      } catch (e) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoginScreen(),
+            ),
+            (route) => false);
+      }
+    });
   }
 
   @override
@@ -37,17 +60,21 @@ class StartState extends State<SplashScreen> {
 
   Widget initWidget(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(decoration: BoxDecoration()),
-          Center(
-            child: Container(
-              decoration: BoxDecoration(),
-              child: SvgPicture.asset("assets/icons/logo.svg"),
-            ),
-          ),
-        ],
-      ),
+      body: FutureBuilder(
+          future: _onlaund(),
+          builder: (context, snapshot) {
+            return Stack(
+              children: [
+                Container(decoration: BoxDecoration()),
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(),
+                    child: SvgPicture.asset("assets/icons/logo.svg"),
+                  ),
+                ),
+              ],
+            );
+          }),
     );
   }
 }

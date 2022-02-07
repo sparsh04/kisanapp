@@ -9,6 +9,7 @@ import 'package:my_kisan/accessories/Position.dart';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/screens/Cart_Screen.dart';
 import 'package:my_kisan/screens/Maindrawer.dart';
+import 'package:my_kisan/screens/categorylistscreen.dart';
 import 'package:my_kisan/screens/notification_screen.dart';
 import "dart:core";
 
@@ -58,6 +59,7 @@ class _CategoryProductState extends State<CategoryProduct> {
     await getlocation();
     await getcategories();
     await getNotifications();
+    await getCcarttotal();
   }
 
   @override
@@ -68,10 +70,20 @@ class _CategoryProductState extends State<CategoryProduct> {
   }
 
   Future<Stream<QuerySnapshot>> getuserNotifications() async {
+    return FirebaseFirestore.instance.collection("Notifications").snapshots();
+  }
+
+  var carttotal;
+  getCcarttotal() async {
+    carttotal = await getcarttotal();
+    setState(() {});
+  }
+
+  Future<Stream<QuerySnapshot>> getcarttotal() async {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(_auth.currentUser!.phoneNumber)
-        .collection("Notifications")
+        .collection("cart")
         .snapshots();
   }
 
@@ -116,24 +128,30 @@ class _CategoryProductState extends State<CategoryProduct> {
                           )));
                 }
               }),
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, CartScreen.routName);
-              },
-              icon: Badge(
-                  badgeContent: Text(
-                    "2",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  animationDuration: Duration(milliseconds: 300),
-                  child: Icon(
-                    Icons.shopping_cart,
-                    size: 25,
-                  ))),
+          StreamBuilder(
+              stream: carttotal,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                return IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, CartScreen.routName);
+                    },
+                    icon: Badge(
+                        badgeContent: Text(
+                          snapshot.hasData
+                              ? '${snapshot.data!.docs.length}'
+                              : "0",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        animationDuration: Duration(milliseconds: 300),
+                        child: Icon(
+                          Icons.shopping_cart,
+                          size: 25,
+                        )));
+              }),
           SizedBox(
             width: 10,
-          )
+          ),
         ],
       ),
       body: Column(children: [
@@ -208,7 +226,11 @@ class _CategoryProductState extends State<CategoryProduct> {
                         as Map<String, dynamic>;
                     print(map['Name']);
                     return GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                CategoryListScreen(map: map)));
+                      },
                       child: CategoryRoundCard(
                           image: map["Imgurl"], name: map["Name"]),
                       // child: Container(
@@ -218,9 +240,7 @@ class _CategoryProductState extends State<CategoryProduct> {
                   },
                 );
               } else {
-                return Center(
-                    child: Container(
-                        height: 40, child: const CircularProgressIndicator()));
+                return Center(child: Container(height: 40, child: Container()));
               }
             },
           ),

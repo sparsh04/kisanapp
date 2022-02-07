@@ -9,9 +9,17 @@ import 'package:random_string/random_string.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentScreen extends StatefulWidget {
+  String address;
+  String subaddress;
+  int off;
   int total;
   var items;
-  PaymentScreen({required this.total, this.items});
+  PaymentScreen(
+      {required this.address,
+      required this.subaddress,
+      required this.off,
+      required this.total,
+      this.items});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -52,23 +60,53 @@ class _PaymentScreenState extends State<PaymentScreen> {
     try {
       _razorpay.open(options);
     } catch (e) {
-      print(e.toString());
+      //  print(e.toString());
     }
   }
 
   void addorders() async {
     String v = randomString(10);
 
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
         .collection("orders")
         .doc(v)
         .set({
+      "address": widget.address + " " + widget.subaddress,
+      "orderid": v,
       "orderlist": widget.items,
       "ts": DateTime.now(),
       "mode": "Online",
-      "amount": widget.total,
+      "amount": widget.total - widget.off,
+      "discount": widget.off,
+    });
+    ;
+
+    // print(widget.items);
+
+    await FirebaseFirestore.instance.collection("Orders").doc(v).set({
+      "address": widget.address + " " + widget.subaddress,
+      "orderid": v,
+      "Phone": FirebaseAuth.instance.currentUser!.phoneNumber,
+      "orderby": FirebaseAuth.instance.currentUser!.displayName,
+      "orderlist": widget.items,
+      "ts": DateTime.now(),
+      "mode": "Online",
+      "amount": widget.total - widget.off,
+      "discount": widget.off,
+    });
+    ;
+
+    await FirebaseFirestore.instance.collection("Payments").doc(v).set({
+      "orderid": v,
+      "Phone": FirebaseAuth.instance.currentUser!.phoneNumber,
+      "orderby": FirebaseAuth.instance.currentUser!.displayName,
+      "orderlist": widget.items,
+      "ts": DateTime.now(),
+      "mode": "Online",
+      "amount": widget.total - widget.off,
+      "discount": widget.off,
     });
     ;
 
@@ -101,7 +139,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         .get();
 
     final userdata = userdoc.data();
-    print(userdata);
+    // print(userdata);
     return userdata;
   }
 
@@ -127,7 +165,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     onChanged: (value) {
                       setState(() {
                         _result = value;
-                        print(_result);
+                        //   print(_result);
                       });
                     }),
                 Text(
@@ -147,7 +185,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     onChanged: (value) {
                       setState(() {
                         _result = value;
-                        print(_result);
+                        // print(_result);
                       });
                     }),
                 Text(
@@ -183,9 +221,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: PaymentDetail(
-                prodDiscount: '₹310.00',
-                totalAmt: '₹00.00',
-                totalMrp: '₹310.00',
+                off: widget.off,
                 total: widget.total,
               ),
             ),
@@ -199,16 +235,52 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       MaterialPageRoute(builder: (context) => OrderPalced()));
                   String v = randomString(10);
 
-                  FirebaseFirestore.instance
+                  await FirebaseFirestore.instance
                       .collection("users")
                       .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
                       .collection("orders")
                       .doc(v)
                       .set({
+                    "address": widget.address + " " + widget.subaddress,
+                    "orderid": v,
                     "orderlist": widget.items,
                     "ts": DateTime.now(),
                     "mode": "COD",
-                    "amount": widget.total,
+                    "amount": widget.total - widget.off,
+                    "discount": widget.off,
+                  });
+                  ;
+
+                  // print(widget.items + "cod");
+
+                  await FirebaseFirestore.instance
+                      .collection("Orders")
+                      .doc(v)
+                      .set({
+                    "address": widget.address + " " + widget.subaddress,
+                    "orderid": v,
+                    "Phone": FirebaseAuth.instance.currentUser!.phoneNumber,
+                    "orderby": FirebaseAuth.instance.currentUser!.displayName,
+                    "orderlist": widget.items,
+                    "ts": DateTime.now(),
+                    "mode": "COD",
+                    "amount": widget.total - widget.off,
+                    "discount": widget.off,
+                  });
+                  ;
+
+                  await FirebaseFirestore.instance
+                      .collection("Payments")
+                      .doc(v)
+                      .set({
+                    "orderid": v,
+                    "Phone": FirebaseAuth.instance.currentUser!.phoneNumber,
+                    "orderby": FirebaseAuth.instance.currentUser!.displayName,
+                    "orderlist": widget.items,
+                    "ts": DateTime.now(),
+                    "mode": "COD",
+                    "amount": widget.total - widget.off,
+                    "discount": widget.off,
                   });
                   ;
                 }
@@ -219,24 +291,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                 if (_result.toString() == "2") {
                   var data = await getuser();
-                  var wallettotal = data['wallettotal'].toInt();
-                  var total = widget.total.toInt();
-                  print((wallettotal));
-                  print((total));
+                  var wallettotal;
+                  if (data['wallettotal'] == null) {
+                    wallettotal = 0;
+                  } else {
+                    wallettotal = data['wallettotal'].toInt();
+                  }
+
+                  var total = widget.total.toInt() - widget.off.toInt();
+                  //  print((wallettotal));
+                  // print((total));
                   if ((wallettotal) >= (total)) {
                     final DateTime now = DateTime.now();
                     final DateFormat formatter = DateFormat('yyyy-MM-dd');
                     final String formatted = formatter.format(now);
                     final String formattedTime = DateFormat.Hms().format(now);
                     Map<String, dynamic> userInfoMap = {
-                      "amount": widget.total,
+                      "amount": widget.total - widget.off,
                       "time": formattedTime,
                       "date": formatted,
                       "type": "Purchase",
                       "ts": DateTime.now(),
                     };
 
-                    FirebaseFirestore.instance
+                    await FirebaseFirestore.instance
                         .collection("users")
                         .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
                         .collection("wallet")
@@ -249,16 +327,52 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         .update({"wallettotal": wallettotal - total.toInt()});
 
                     String v = randomString(10);
-                    FirebaseFirestore.instance
+                    await FirebaseFirestore.instance
                         .collection("users")
                         .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
                         .collection("orders")
                         .doc(v)
                         .set({
+                      "address": widget.address + " " + widget.subaddress,
+                      "orderid": v,
                       "orderlist": widget.items,
                       "ts": DateTime.now(),
                       "mode": "Wallet",
-                      "amount": widget.total,
+                      "amount": widget.total - widget.off,
+                      "discount": widget.off,
+                    });
+                    ;
+
+                    // print(widget.items + "wallet");
+
+                    await FirebaseFirestore.instance
+                        .collection("Orders")
+                        .doc(v)
+                        .set({
+                      "address": widget.address + " " + widget.subaddress,
+                      "orderid": v,
+                      "Phone": FirebaseAuth.instance.currentUser!.phoneNumber,
+                      "orderby": FirebaseAuth.instance.currentUser!.displayName,
+                      "orderlist": widget.items,
+                      "ts": DateTime.now(),
+                      "mode": "Wallet",
+                      "amount": widget.total - widget.off,
+                      "discount": widget.off,
+                    });
+                    ;
+
+                    await FirebaseFirestore.instance
+                        .collection("Payments")
+                        .doc(v)
+                        .set({
+                      "orderid": v,
+                      "Phone": FirebaseAuth.instance.currentUser!.phoneNumber,
+                      "orderby": FirebaseAuth.instance.currentUser!.displayName,
+                      "orderlist": widget.items,
+                      "ts": DateTime.now(),
+                      "mode": "Wallet",
+                      "amount": widget.total - widget.off,
+                      "discount": widget.off,
                     });
                     ;
 

@@ -1,17 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:my_kisan/accessories/sharedpref_helper.dart';
 
 import 'package:my_kisan/screens/Splash_screen.dart';
 import 'package:my_kisan/constant.dart';
-import 'package:my_kisan/screens/home_screen.dart';
-import 'package:my_kisan/screens/Login_Screen.dart';
-import 'package:my_kisan/screens/Maindrawer.dart';
-import 'package:my_kisan/screens/Otp_screen.dart';
-import 'package:my_kisan/screens/Signup_Screen.dart';
-import 'package:my_kisan/screens/home_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   //const OtpScreen({Key? key}) : super(key: key);
@@ -191,7 +185,7 @@ class _OtpScreenState extends State<OtpScreen> {
           .get();
 
       if (!snapshot.exists && widget.userInfoMap != Null) {
-        FirebaseFirestore.instance
+        await FirebaseFirestore.instance
             .collection("users")
             .doc(widget.phonenumber)
             .set(widget.userInfoMap);
@@ -201,13 +195,14 @@ class _OtpScreenState extends State<OtpScreen> {
             .doc(widget.phonenumber)
             .update({"uid": _auth.currentUser!.uid});
 
-        User? currentuser = _auth.currentUser;
-        currentuser!.updatePhoneNumber(phoneAuthCredential);
-        currentuser.updateDisplayName(widget.firstname);
-        currentuser.updatePhotoURL(widget.userInfoMap['photourl']);
+        User? currentuser = await _auth.currentUser;
+        await currentuser!.updatePhoneNumber(phoneAuthCredential);
+        await currentuser.updateDisplayName(widget.firstname);
+        await currentuser.updatePhotoURL(widget.userInfoMap['photourl']);
       }
 
-      print(_auth.currentUser!.phoneNumber);
+      SharedPreferncehelper.saveUserLoggedInSharedPreference(true);
+      //  print(_auth.currentUser!.phoneNumber);
 
       //    _auth.currentUser.updateDisplayName
 
@@ -221,6 +216,8 @@ class _OtpScreenState extends State<OtpScreen> {
           MaterialPageRoute(builder: (context) => SplashScreen()),
         );
       }
+
+      SharedPreferncehelper.saveUserLoggedInSharedPreference(true);
     } on FirebaseAuthException catch (e) {
       setState(() {
         showloading = false;

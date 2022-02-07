@@ -8,12 +8,13 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:my_kisan/Component/category_roundcard.dart';
 import 'package:my_kisan/accessories/Position.dart';
+import 'package:my_kisan/accessories/sharedpref_helper.dart';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/screens/Cart_Screen.dart';
+import 'package:my_kisan/screens/CustomCard.dart';
 import 'package:my_kisan/screens/Maindrawer.dart';
+import 'package:my_kisan/screens/categorylistscreen.dart';
 import 'package:my_kisan/screens/notification_screen.dart';
-import 'package:my_kisan/screens/product_details.dart';
-import 'package:my_kisan/size_config.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var categorystream,
+      couponsstream,
       notificationstream,
       position,
       location,
@@ -33,10 +35,22 @@ class _HomeScreenState extends State<HomeScreen> {
       carttotal,
       cartitem,
       resturantstream;
+  List slideslist = [];
+  List<Map> categorlist = [];
+
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getCcategories() async {
     return FirebaseFirestore.instance.collection("Category").snapshots();
+  }
+
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getCcoupons() async {
+    return FirebaseFirestore.instance.collection("Coupons").snapshots();
+  }
+
+  getcoupons() async {
+    couponsstream = await getCcoupons();
+    setState(() {});
   }
 
   getcategories() async {
@@ -51,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getuserresturant() async {
     resturantstream = await getresturants();
-    setState(() {});
+    //setState(() {});
   }
 
   getCcarttotal() async {
@@ -76,30 +90,37 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   doThisOnLaunch() async {
+    categorlist = await categoryllist();
+    slideslist = await sliderllist();
     await getlocation();
     await getcategories();
     await getNotifications();
     await getCcarttotal();
-    await getuser();
-    await getuserresturant();
+    await getcoupons();
+    // await getuser();
+    SharedPreferncehelper.saveUserLoggedInSharedPreference(true);
+    getuserresturant();
   }
+
+  // @override
+  // void didChangeDependencies() {
+  //   // TODO: implement didChangeDependencies
+  //   WidgetsFlutterBinding.ensureInitialized();
+  //   doThisOnLaunch();
+  //   super.didChangeDependencies();
+  // }
 
   @override
   void initState() {
-    WidgetsFlutterBinding.ensureInitialized();
-    doThisOnLaunch();
     setState(() {
-      this.cartitem = getuser();
+      //  this.cartitem = getuser();
     });
     super.initState();
+    doThisOnLaunch();
   }
 
   Future<Stream<QuerySnapshot>> getuserNotifications() async {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .doc(_auth.currentUser!.phoneNumber)
-        .collection("Notifications")
-        .snapshots();
+    return FirebaseFirestore.instance.collection("Notifications").snapshots();
   }
 
   Future<Stream<QuerySnapshot>> getcarttotal() async {
@@ -111,19 +132,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<Stream<QuerySnapshot>> getresturants() async {
-    return FirebaseFirestore.instance.collection("Resturants").snapshots();
+    return FirebaseFirestore.instance.collection("Products").snapshots();
   }
 
-  Future<int> getuser() async {
-    final userdoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
-        .get();
+  Future<List<Map>> categoryllist() async {
+    List<Map> categorylist = [];
+    await FirebaseFirestore.instance.collection("Category").get().then((value) {
+      List<DocumentSnapshot> ls = value.docs;
+      ls.forEach((element) {
+        String image = element['Imgurl'];
+        String name = element['Name'];
+        Map a = {name: image};
+        // sliderlist[name] = percentage;
+        categorylist.add(a);
+      });
+    });
+    print(categorylist);
+    return categorylist;
+  }
 
-    final userdata = userdoc.data();
-    print(userdata);
-    var cartitems = userdata!['totalitems'];
-    return cartitems;
+  Future<List> sliderllist() async {
+    List sliderlist = [];
+    await FirebaseFirestore.instance.collection('Slider').get().then((value) {
+      List<DocumentSnapshot> ls = value.docs;
+      ls.forEach((element) {
+        String name = element['imgurl'];
+        var a = name;
+        // sliderlist[name] = percentage;
+        sliderlist.add(a);
+      });
+    });
+    print(sliderlist);
+    return sliderlist;
   }
 
   Widget Offersbody({
@@ -223,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }),
             SizedBox(
               width: 10,
-            )
+            ),
           ],
         ),
         body: SingleChildScrollView(
@@ -304,17 +344,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>;
                             return GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        CategoryListScreen(map: map)));
+                              },
                               child: CategoryRoundCard(
                                   image: map["Imgurl"], name: map["Name"]),
-                              // child: Container(
-
-                              //     child: Text(map['Name'])),
                             );
                           });
                     } else {
-                      return Container(
-                          height: 40, child: const CircularProgressIndicator());
+                      return Container(height: 40, child: Container());
                     }
                   },
                 ),
@@ -324,61 +364,44 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 20,
             ),
             //slider
-            Container(
-              child: Column(
-                children: [
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      //  enlargeCenterPage: true,
-                      aspectRatio: 16 / 9,
-                      initialPage: 1,
-                      enableInfiniteScroll: true,
-                      autoPlayInterval: Duration(seconds: 2),
-                      onPageChanged: (index, reason) =>
-                          setState(() => activeIndex = index),
-                      autoPlay: true,
-                      height: MediaQuery.of(context).size.height * 0.2 + 5,
-                    ),
-                    items: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image:
-                                AssetImage("assets/images/delivery_banner.png"),
-                            fit: BoxFit.cover,
-                          ),
+            slideslist.length != 0
+                ? Column(
+                    children: [
+                      CarouselSlider.builder(
+                        itemCount: slideslist.length,
+                        itemBuilder: (context, itemIndex, realIndex) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                  image: NetworkImage(slideslist[itemIndex]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        options: CarouselOptions(
+                          aspectRatio: 16 / 9,
+                          initialPage: 1,
+                          enableInfiniteScroll: true,
+                          autoPlayInterval: Duration(seconds: 2),
+                          onPageChanged: (index, reason) =>
+                              setState(() => activeIndex = index),
+                          autoPlay: true,
+                          height: MediaQuery.of(context).size.height * 0.2 + 5,
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image:
-                                AssetImage("assets/images/delivery_banner.png"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      SizedBox(
+                        height: 10,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image:
-                                AssetImage("assets/images/delivery_banner.png"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+                      buildIndicator(slideslist.length),
                     ],
-                  ),
-                  buildIndicator(),
-                ],
-              ),
-            ),
-            // SizedBox(
-            //   height: 10,
-            // ),
+                  )
+                : Container(),
+
             Column(children: [
               Row(
                 children: [
@@ -416,21 +439,87 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              //offers body
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    children: [
-                      Offersbody(image: "assets/images/discount_50.svg"),
-                      Offersbody(image: "assets/images/discount_25.svg"),
-                      Offersbody(image: "assets/images/discount_15.svg"),
-                      Offersbody(image: "assets/images/discount_10.svg"),
-                    ],
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 80,
+                  child: StreamBuilder(
+                    stream: couponsstream,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                Map<String, dynamic> map =
+                                    snapshot.data!.docs[index].data()
+                                        as Map<String, dynamic>;
+                                return Card(
+                                  elevation: 10,
+                                  child: Center(
+                                    child: Container(
+                                      height: 80,
+                                      width:
+                                          MediaQuery.of(context).size.width / 4,
+                                      padding: EdgeInsets.all(10),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            map["code"],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                                // return Container(
+                                //     margin: EdgeInsets.all(10),
+                                //     decoration:
+                                //         BoxDecoration(color: Colors.blue),
+                                //     height: 100,
+                                //     width:
+                                //         MediaQuery.of(context).size.width / 4,
+                                //     // map["code"],
+
+                                //     child: Card(child: Text(map["code"])));
+                              });
+                        } else {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  Offersbody(
+                                      image: "assets/images/discount_50.svg"),
+                                  Offersbody(
+                                      image: "assets/images/discount_25.svg"),
+                                  Offersbody(
+                                      image: "assets/images/discount_15.svg"),
+                                  Offersbody(
+                                      image: "assets/images/discount_10.svg"),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                      } else {
+                        return Container(height: 20, child: Container());
+                      }
+                    },
                   ),
                 ),
               ),
+              //offers body
+
               Column(
                 children: [
                   Row(
@@ -454,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(right: 25),
                                   child: Text(
-                                    "All Resturent",
+                                    "Best Selling",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: textcolorblack,
@@ -476,45 +565,51 @@ class _HomeScreenState extends State<HomeScreen> {
             //   Container(
             //   height: 300,
             //    child:
-            StreamBuilder(
-                stream: resturantstream,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  print(resturantstream);
-                  if (snapshot.connectionState == ConnectionState.active) {
-                    return Container(
-                      // alignment: Alignment.center,
-                      height: snapshot.data!.docs.length * 120.00,
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Map<String, dynamic> map = snapshot.data!.docs[index]
-                              .data() as Map<String, dynamic>;
-                          return RestaurantCard(
-                            image: map['imgurl'],
-                            resturantname: map['name'],
-                            submenus: map['style'],
-                            ontap: () {
-                              // Navigator.pushNamed(context, ProductDetail.routName);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      ProductDetail(map: map)));
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                }),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: StreamBuilder(
+                  stream: resturantstream,
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    print(resturantstream);
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      return Container(
+                        // alignment: Alignment.center,
+                        height: 4 * 140.00,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 3,
+                          itemBuilder: (BuildContext context, int index) {
+                            Map<String, dynamic> map =
+                                snapshot.data!.docs[index].data()
+                                    as Map<String, dynamic>;
+                            return CustomeProductCard(
+                              wis: false,
+                              isfavoutite: false,
+                              image: map['imgurl'],
+                              name: map['name'],
+                              price: map['price'] ?? '',
+                              title: map['category'],
+                              index: index,
+                              productid: map['productid'],
+                              map: map,
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }),
+            ),
             //  ),
           ]),
         ));
   }
 
-  Widget buildIndicator() => AnimatedSmoothIndicator(
+  Widget buildIndicator(int length) => AnimatedSmoothIndicator(
         activeIndex: activeIndex,
-        count: 3,
+        count: length,
         effect: ExpandingDotsEffect(
           dotHeight: 8,
           dotWidth: 10,
@@ -579,13 +674,6 @@ class RestaurantCard extends StatelessWidget {
                 ],
               ),
               Spacer(),
-              Container(
-                margin: EdgeInsets.only(bottom: 30),
-                child: Icon(
-                  Icons.favorite_border,
-                  color: Colors.red,
-                ),
-              )
             ],
           ),
         ),

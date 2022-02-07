@@ -237,6 +237,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     "User Already Exists . Login Please")));
                           } else {
                             await _auth.verifyPhoneNumber(
+                                timeout: const Duration(seconds: 20),
                                 phoneNumber: "+91" + phonenumbercontroller.text,
                                 verificationCompleted:
                                     (phoneAuthcredential) async {
@@ -263,13 +264,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                   });
                                 },
                                 codeAutoRetrievalTimeout:
-                                    (verificationId) async {});
-
-                            //                         await
-                            //                         FirebaseFirestore.instance
-                            // .collection("chatrooms")
-                            // .doc(phonenumbercontroller.text)
-                            // .set(usermap);
+                                    (verificationId) async {
+                                  setState(() {
+                                    currentstate = MobileVerificationState
+                                        .SHOW_OTP_FORM_STATE;
+                                  });
+                                });
 
                             if (currentstate ==
                                 MobileVerificationState.SHOW_OTP_FORM_STATE) {

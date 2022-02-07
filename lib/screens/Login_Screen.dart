@@ -214,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           if (currentstate ==
                               MobileVerificationState.SHOW_OTP_FORM_STATE) {
-                            await Navigator.push(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => OtpScreen(

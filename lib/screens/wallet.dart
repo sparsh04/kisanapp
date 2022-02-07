@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:my_kisan/all_list.dart';
+
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/size_config.dart';
-import 'package:buttons_tabbar/buttons_tabbar.dart';
+
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:random_string/random_string.dart';
 import 'package:intl/intl.dart';
@@ -94,6 +94,11 @@ class _MyWalletState extends State<MyWallet> {
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.phoneNumber)
         .collection("wallet")
+        .doc(randomString(10))
+        .set(userInfoMap);
+
+    FirebaseFirestore.instance
+        .collection("Payments")
         .doc(randomString(10))
         .set(userInfoMap);
 
@@ -281,94 +286,84 @@ class _MyWalletState extends State<MyWallet> {
                   //transaction tab bar
                   Container(
                     padding: new EdgeInsets.all(10.0),
-                    child: DefaultTabController(
-                        length: 2,
-                        child: Column(
-                          children: [
-                            ButtonsTabBar(
-                                height: screenHeight(context) * 0.05,
-                                buttonMargin:
-                                    EdgeInsets.symmetric(horizontal: 15),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 0),
-                                labelStyle: TextStyle(color: Colors.black),
-                                backgroundColor: orangecolor,
-                                unselectedBackgroundColor:
-                                    orangecolor.withOpacity(0.5),
-                                unselectedLabelStyle: TextStyle(
-                                  color: Colors.black,
-                                ),
-                                tabs: [
-                                  Tab(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      width: screenWidth(context) / 4,
-                                      child: Text(
-                                        "Recharge",
-                                        style: TextStyle(color: Colors.white),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            "Recharge",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                        // ButtonsTabBar(
+                        //     height: screenHeight(context) * 0.05,
+                        //     buttonMargin:
+                        //         EdgeInsets.symmetric(horizontal: 15),
+                        //     contentPadding: EdgeInsets.symmetric(
+                        //         horizontal: 10, vertical: 0),
+                        //     labelStyle: TextStyle(color: Colors.black),
+                        //     backgroundColor: orangecolor,
+                        //     unselectedBackgroundColor:
+                        //         orangecolor.withOpacity(0.5),
+                        //     unselectedLabelStyle: TextStyle(
+                        //       color: Colors.black,
+                        //     ),
+                        //     tabs: [
+                        //       Tab(
+                        //         child: Container(
+                        //           alignment: Alignment.center,
+                        //           width: screenWidth(context) / 4,
+                        //           child: Text(
+                        //             "Recharge",
+                        //             style: TextStyle(color: Colors.white),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ]),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        SizedBox(
+                          // height: MediaQuery.of(context).size.height / 2.2,
+                          width: double.infinity,
+                          child: Column(children: [
+                            StreamBuilder(
+                                stream: wallettransactionstream,
+                                builder: (BuildContext context,
+                                    AsyncSnapshot snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.active) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 5.0, right: 5),
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                2.2,
+                                        child: ListView.builder(
+                                            itemCount:
+                                                snapshot.data!.docs.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              Map<String, dynamic> map =
+                                                  snapshot.data!.docs[index]
+                                                          .data()
+                                                      as Map<String, dynamic>;
+                                              return transactionCard(map: map);
+                                            }),
                                       ),
-                                    ),
-                                  ),
-                                  Tab(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      width: screenWidth(context) / 4,
-                                      child: Text("Credit",
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ),
-                                ]),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height / 2.2,
-                              width: double.infinity,
-                              child: TabBarView(children: [
-                                StreamBuilder(
-                                    stream: wallettransactionstream,
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.active) {
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 5.0, right: 5),
-                                          child: ListView.builder(
-                                              itemCount:
-                                                  snapshot.data!.docs.length,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                Map<String, dynamic> map =
-                                                    snapshot.data!.docs[index]
-                                                            .data()
-                                                        as Map<String, dynamic>;
-                                                return transactionCard(
-                                                    map: map);
-                                              }),
-                                        );
-                                      } else {
-                                        return Container();
-                                      }
-                                    }),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 5.0, right: 5),
-                                  child: ListView.builder(
-                                      itemCount: walletrtransactioncard.length,
-                                      itemBuilder: (context, index) {
-                                        return Text("he");
-                                        // return transactionCard(
-                                        //     walletTransactionCard:
-                                        //         walletrtransactioncard[index]);
-                                      }),
-                                )
-                              ]),
-                            ),
-                          ],
-                        )),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }),
+                          ]),
+                        ),
+                      ],
+                    ),
                   ),
                   //transaction card
                 ],

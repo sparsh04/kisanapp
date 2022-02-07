@@ -36,11 +36,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<Stream<QuerySnapshot>> getuserNotifications() async {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .doc(_auth.currentUser!.phoneNumber)
-        .collection("Notifications")
-        .snapshots();
+    return FirebaseFirestore.instance.collection("Notifications").snapshots();
   }
 
   @override
@@ -82,7 +78,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     }),
               );
             } else {
-              return const CircularProgressIndicator();
+              return Container();
             }
           },
         ),

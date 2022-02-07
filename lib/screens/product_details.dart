@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
 import 'package:my_kisan/screens/CustomCard.dart';
@@ -10,392 +11,216 @@ class ProductDetail extends StatefulWidget {
   _ProductDetailState createState() => _ProductDetailState();
 }
 
-class _ProductDetailState extends State<ProductDetail>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ProductDetailState extends State<ProductDetail> {
+  var resturantcategories;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    getresturantscategories();
+  }
+
+  getresturantscategories() async {
+    this.resturantcategories = await gethotelcategories();
+    setState(() {});
+  }
+
+  Future<Stream<QuerySnapshot>> gethotelcategories() async {
+    return FirebaseFirestore.instance
+        .collection("Resturants")
+        .doc(widget.map['name'])
+        .collection("categories")
+        .snapshots();
+  }
+
+  Widget MoreInfo() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Container(
+                alignment: Alignment.centerLeft,
+                height: 200,
+                child: Image.network(
+                  widget.map['imgurl'],
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                )),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Container(
+              padding: EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 8),
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20)),
+              child: Text(
+                "Phone : " + widget.map['Phone'],
+                style: TextStyle(color: Colors.black, fontSize: 15),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Container(
+              padding: EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 8),
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20)),
+              child: Text(
+                "Address : " + widget.map['Address'],
+                style: TextStyle(color: Colors.black, fontSize: 15),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget Menu() {
+    return Container(
+      child: StreamBuilder(
+        stream: resturantcategories,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (BuildContext context, int index) {
+                Map<String, dynamic> map1 =
+                    snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                print(map1);
+                return Container(
+                  padding: EdgeInsets.all(10),
+                  child: Card(
+                      child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                        child: Center(
+                            child: Text(
+                          map1['name'].toUpperCase(),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                      ),
+                      CategoryList(map1: map1, map0: widget.map),
+                    ],
+                  )),
+                );
+              },
+            );
+          } else {
+            return Container(
+              child: Text("load"),
+            );
+          }
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xfff35751f),
-        title: Text("Rolex Hotel"),
-        centerTitle: true,
-        // leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              child: TabBar(
-                labelColor: Colors.black,
-                labelStyle: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+    return MaterialApp(
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: [
+                Tab(
+                  child: Text("Dishes"),
                 ),
-                // indicatorColor: Colors.black,
-                indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(color: Colors.black, width: 1.5),
-                  //  insets: EdgeInsets.fromLTRB(50.0, 0.0, 50.0, 40.0),
+                Tab(
+                  child: Text("More Info"),
                 ),
-                tabs: [
-                  Tab(text: "Dishes"),
-                  Tab(text: "Reviews"),
-                  Tab(text: "Moreinfo"),
-                  Tab(text: "Food Menu"),
-                ],
-                controller: _tabController,
-              ),
+              ],
             ),
-            ExpandableTheme(
-                data: ExpandableThemeData(useInkWell: true),
-                child: Column(
-                  children: [Card1(), Card2(), Card3()],
-                )),
-            SizedBox(
-              height: 20,
-            ),
-          ],
+            backgroundColor: Color(0xfff35751f),
+            title: Text("Rolex Hotel"),
+            centerTitle: true,
+            // leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
+          ),
+          body: TabBarView(children: [
+            //   Dishes(),
+            Menu(),
+            MoreInfo(),
+          ]),
         ),
       ),
     );
   }
 }
 
-List<ExpandableController> controllerList = [
-  ExpandableController(),
-  ExpandableController(),
-  ExpandableController(),
-];
+class CategoryList extends StatefulWidget {
+  // CategoryList({Key? key}) : super(key: key);
+  var map1, map0;
+  CategoryList({required this.map1, required this.map0});
 
-int currentIndex = -1;
-
-// card 1  Screen
-class Card1 extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: Card(
-        elevation: 1,
-        color: Colors.white,
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: <Widget>[
-            ScrollOnExpand(
-              scrollOnExpand: true,
-              scrollOnCollapse: false,
-              child: ExpandablePanel(
-                controller: controllerList[0],
-                theme: const ExpandableThemeData(
-                  iconColor: Colors.black,
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  tapBodyToCollapse: true,
-                ),
-                header: InkWell(
-                  onTap: () {
-                    currentIndex = 0;
-                    for (int i = 0; i < controllerList.length; i++) {
-                      if (i == currentIndex) {
-                        controllerList[i].expanded = true;
-                      } else {
-                        controllerList[i].expanded = false;
-                      }
-                    }
-                  },
-                  child: Container(
-                    color: Colors.white,
-                    child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(),
-                            Text(
-                              "Rice Preparation",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-                collapsed: Container(),
-                expanded: Column(
-                  children: [
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
-                builder: (_, collapsed, expanded) {
-                  return Expandable(
-                    collapsed: collapsed,
-                    expanded: expanded,
-                    theme: const ExpandableThemeData(crossFadePoint: 0),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    ));
+  State<CategoryList> createState() => _CategoryListState();
+}
+
+class _CategoryListState extends State<CategoryList> {
+  var resturantproducts;
+
+  @override
+  void initState() {
+    super.initState();
+    getresturantscategories();
   }
-}
 
-// card 2 Screen
-class Card2 extends StatefulWidget {
-  @override
-  State<Card2> createState() => _Card2State();
-}
+  getresturantscategories() async {
+    this.resturantproducts = await gethotelcategories();
 
-class _Card2State extends State<Card2> {
-  @override
-  Widget build(BuildContext context) {
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: Card(
-        // elevation: 1.0,
-        color: Colors.white,
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: <Widget>[
-            ScrollOnExpand(
-              scrollOnExpand: true,
-              scrollOnCollapse: false,
-              child: ExpandablePanel(
-                controller: controllerList[1],
-                theme: const ExpandableThemeData(
-                  iconColor: Colors.black,
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  tapBodyToCollapse: true,
-                ),
-                header: InkWell(
-                  onTap: () {
-                    currentIndex = 1;
-                    for (int i = 0; i < controllerList.length; i++) {
-                      if (i == currentIndex) {
-                        controllerList[i].expanded = true;
-                      } else {
-                        controllerList[i].expanded = false;
-                      }
-                    }
-                  },
-                  child: Container(
-                    color: Colors.white,
-                    child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(),
-                            Text(
-                              "Starters",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-                collapsed: Container(),
-                expanded: Column(
-                  children: [
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                  ],
-                ),
-                builder: (_, collapsed, expanded) {
-                  return Expandable(
-                    collapsed: collapsed,
-                    expanded: expanded,
-                    theme: const ExpandableThemeData(crossFadePoint: 0),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    ));
+    setState(() {});
   }
-}
 
-// card 3 Screen
-class Card3 extends StatefulWidget {
-  const Card3({Key? key}) : super(key: key);
+  Future<Stream<QuerySnapshot>> gethotelcategories() async {
+    return FirebaseFirestore.instance
+        .collection("Resturants")
+        .doc(widget.map0['name'])
+        .collection("categories")
+        .doc(widget.map1['name'])
+        .collection("Products")
+        .snapshots();
+  }
 
-  @override
-  _Card3State createState() => _Card3State();
-}
-
-class _Card3State extends State<Card3> {
   @override
   Widget build(BuildContext context) {
-    return ExpandableNotifier(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Card(
-          color: Colors.white,
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: <Widget>[
-              ScrollOnExpand(
-                scrollOnExpand: true,
-                scrollOnCollapse: false,
-                child: ExpandablePanel(
-                  controller: controllerList[2],
-                  theme: const ExpandableThemeData(
-                    iconColor: Colors.black,
-                    headerAlignment: ExpandablePanelHeaderAlignment.center,
-                    tapBodyToCollapse: true,
-                  ),
-                  header: InkWell(
-                    onTap: () {
-                      currentIndex = 2;
-                      for (int i = 0; i < controllerList.length; i++) {
-                        if (i == currentIndex) {
-                          controllerList[i].expanded = true;
-                        } else {
-                          controllerList[i].expanded = false;
-                        }
-                      }
-                    },
-                    child: Container(
-                      color: Colors.white,
-                      child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(),
-                              Text(
-                                "Soft Drink",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          )),
-                    ),
-                  ),
-                  collapsed: Container(),
-                  expanded: Column(children: [
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                    CustomeProductCard(
-                      image: "assets/images/vegetabl.png",
-                      name: "Angara Chilly",
-                      title: 'in Starter',
-                      price: '₹ 310',
-                      index: 1,
-                      map: null,
-                      productid: "1",
-                    ),
-                  ]),
-                  builder: (_, collapsed, expanded) {
-                    return Expandable(
-                      collapsed: collapsed,
-                      expanded: expanded,
-                      theme: const ExpandableThemeData(crossFadePoint: 0),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return StreamBuilder(
+      stream: resturantproducts,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          return Container(
+            height: snapshot.data!.docs.length * 160.00,
+            child: ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (BuildContext context, int index) {
+                Map<String, dynamic> map2 =
+                    snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                //   print(map2);
+                return CustomeProductCard(
+                  wis: false,
+                  isfavoutite: false,
+                  image: map2['imgurl'],
+                  name: map2['name'],
+                  price: map2['price'] ?? '',
+                  title: map2['category'],
+                  index: index,
+                  productid: map2['productid'],
+                  map: map2,
+                );
+              },
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }

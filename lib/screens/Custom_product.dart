@@ -33,6 +33,7 @@ class _CustomProductState extends State<CustomProduct> {
   doThisOnLaunch() async {
     await getNotifications();
     await getwishlist();
+    await getCcarttotal();
   }
 
   @override
@@ -43,11 +44,7 @@ class _CustomProductState extends State<CustomProduct> {
   }
 
   Future<Stream<QuerySnapshot>> getuserNotifications() async {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .doc(_auth.currentUser!.phoneNumber)
-        .collection("Notifications")
-        .snapshots();
+    return FirebaseFirestore.instance.collection("Notifications").snapshots();
   }
 
   Future<Stream<QuerySnapshot>> getuserwishlist() async {
@@ -55,6 +52,20 @@ class _CustomProductState extends State<CustomProduct> {
         .collection("users")
         .doc(_auth.currentUser!.phoneNumber)
         .collection("Wishlist")
+        .snapshots();
+  }
+
+  var carttotal;
+  getCcarttotal() async {
+    carttotal = await getcarttotal();
+    setState(() {});
+  }
+
+  Future<Stream<QuerySnapshot>> getcarttotal() async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(_auth.currentUser!.phoneNumber)
+        .collection("cart")
         .snapshots();
   }
 
@@ -109,24 +120,30 @@ class _CustomProductState extends State<CustomProduct> {
                           )));
                 }
               }),
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, CartScreen.routName);
-              },
-              icon: Badge(
-                  badgeContent: Text(
-                    "2",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  animationDuration: Duration(milliseconds: 300),
-                  child: Icon(
-                    Icons.shopping_cart,
-                    size: 25,
-                  ))),
+          StreamBuilder(
+              stream: carttotal,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                return IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, CartScreen.routName);
+                    },
+                    icon: Badge(
+                        badgeContent: Text(
+                          snapshot.hasData
+                              ? '${snapshot.data!.docs.length}'
+                              : "0",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        animationDuration: Duration(milliseconds: 300),
+                        child: Icon(
+                          Icons.shopping_cart,
+                          size: 25,
+                        )));
+              }),
           SizedBox(
             width: 10,
-          )
+          ),
         ],
       ),
       body: StreamBuilder(
@@ -142,6 +159,8 @@ class _CustomProductState extends State<CustomProduct> {
                   return
                       //CustomBody(image: image, name: name, price: price, title: title, index: index, productid: productid)
                       CustomeProductCard(
+                    wis: true,
+                    isfavoutite: true,
                     image: map['imgurl'],
                     name: map['name'],
                     price: map['price'] ?? '',

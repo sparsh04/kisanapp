@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'dart:core';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/routes.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
+import 'package:my_kisan/screens/Splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
       routes: routes,
       debugShowCheckedModeBanner: false,
       title: 'My Kisan',
-      home: LoginScreen(),
+      home: SplashScreen(),
     );
   }
 }

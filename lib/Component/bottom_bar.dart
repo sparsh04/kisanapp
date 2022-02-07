@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_kisan/constant.dart';
@@ -8,6 +10,7 @@ import 'package:my_kisan/screens/Search_bar.dart';
 import 'package:my_kisan/screens/home_screen.dart';
 import 'package:my_kisan/size_config.dart';
 
+// ignore: must_be_immutable
 class BottomBar extends StatefulWidget {
   //const BottomBar({Key? key}) : super(key: key);
   var index;
@@ -35,7 +38,11 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screen[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: screen,
+      ),
+      //child: screen[_selectedIndex]),
       bottomNavigationBar: Container(
           height: 60,
           color: whitecolors,

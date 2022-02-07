@@ -2,14 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_kisan/Component/bottom_bar.dart';
 import 'package:my_kisan/constant.dart';
-import 'package:my_kisan/screens/Categaory_product.dart';
-import 'package:my_kisan/screens/Custom_product.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
-import 'package:my_kisan/screens/home_screen.dart';
-import 'package:my_kisan/screens/order_placed.dart';
 import 'package:my_kisan/screens/orders.dart';
-import 'package:my_kisan/screens/payment_screen.dart';
-import 'package:my_kisan/screens/profile_screen.dart';
 import 'package:my_kisan/screens/wallet.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -96,7 +90,7 @@ class _MainDrawerState extends State<MainDrawer> {
           color: Colors.white,
         ),
         title: Text(
-          "Whislist",
+          "Wishlist",
           style: new TextStyle(fontSize: 16.0, color: whitecolors),
         ),
       ),
@@ -132,21 +126,6 @@ class _MainDrawerState extends State<MainDrawer> {
           style: new TextStyle(fontSize: 16.0, color: whitecolors),
         ),
       ),
-      // ListTile(
-      //   onTap: () {
-      //     Navigator.of(context)
-      //         .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
-      //   },
-      //   leading: Icon(
-      //     Icons.person,
-      //     size: 30,
-      //     color: Colors.white,
-      //   ),
-      //   title: Text(
-      //     "Profile",
-      //     style: new TextStyle(fontSize: 16.0, color: whitecolors),
-      //   ),
-      // ),
       ListTile(
         onTap: () async {
           await FirebaseAuth.instance.signOut();

@@ -102,7 +102,7 @@ class _OrdersState extends State<Orders> {
                                                   Radius.circular(5),
                                                 ),
                                               ),
-                                              child: Text('Rolex Hotel',
+                                              child: Text(formatted,
                                                   style: TextStyle(
                                                       color: Colors.white))),
                                           Spacer(),
@@ -114,10 +114,7 @@ class _OrdersState extends State<Orders> {
                                                   Radius.circular(5),
                                                 ),
                                               ),
-                                              child: Text(
-                                                  formatted +
-                                                      "  " +
-                                                      formattedTime,
+                                              child: Text("  " + formattedTime,
                                                   //'${DateTime.parse(map['ts'].toDate().toString())}',
                                                   style: TextStyle(
                                                       color: Colors.white))),
@@ -160,7 +157,6 @@ class _OrdersState extends State<Orders> {
                                                     )),
                                               ),
                                             );
-                                            ;
                                           },
                                         ),
                                       ),

@@ -6,6 +6,8 @@ import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/size_config.dart';
 
 class CustomeProductCard extends StatefulWidget {
+  bool wis;
+  bool isfavoutite;
   String? image;
   String? name;
   var price;
@@ -15,6 +17,8 @@ class CustomeProductCard extends StatefulWidget {
   var map;
 
   CustomeProductCard({
+    required this.wis,
+    required this.isfavoutite,
     required this.image,
     required this.name,
     required this.price,
@@ -33,6 +37,8 @@ class _CustomeProductCardState extends State<CustomeProductCard> {
   var index0 = 0;
   var wishliststream;
 
+  var isfavourite;
+
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -49,13 +55,44 @@ class _CustomeProductCardState extends State<CustomeProductCard> {
   }
 
   Future removefromwishlist() async {
-    setState(() {});
+    setState(() {
+      !widget.wis ? isfavourite = false : isfavourite = true;
+      ;
+    });
     await _firestore
         .collection('users')
         .doc(_auth.currentUser!.phoneNumber)
         .collection('Wishlist')
         .doc(widget.productid)
         .delete();
+  }
+
+  Future addtowishlist() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser!.phoneNumber)
+        .collection('Wishlist')
+        .doc(widget.productid)
+        .get();
+
+    if (snapshot.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Product Already in your WIshlist")));
+
+      setState(() {
+        isfavourite = true;
+      });
+    } else {
+      setState(() {
+        isfavourite = true;
+      });
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.phoneNumber)
+          .collection('Wishlist')
+          .doc(widget.productid)
+          .set(widget.map);
+    }
   }
 
   addtocard() async {
@@ -87,6 +124,7 @@ class _CustomeProductCardState extends State<CustomeProductCard> {
   @override
   void initState() {
     // TODO: implement initState
+    isfavourite = widget.isfavoutite;
     widget.price = widget.price;
     index0 = widget.index!;
     getwishlist();
@@ -131,15 +169,6 @@ class _CustomeProductCardState extends State<CustomeProductCard> {
                           backgroundImage: NetworkImage(widget.image as String),
                         ),
                       ),
-                      Positioned(
-                        bottom: 40,
-                        left: -10,
-                        child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: Image.asset("assets/images/nonveg.png"),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -179,12 +208,21 @@ class _CustomeProductCardState extends State<CustomeProductCard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          removefromwishlist();
-                          setState(() {});
+                          if (!widget.wis) {
+                            isfavourite
+                                ? removefromwishlist()
+                                : addtowishlist();
+                          } else {
+                            removefromwishlist();
+                          }
                         },
                         child: Container(
                           child: Icon(
-                            Icons.favorite,
+                            !widget.wis
+                                ? (!isfavourite
+                                    ? Icons.favorite_border
+                                    : Icons.favorite)
+                                : Icons.favorite,
                             color: Colors.red,
                           ),
                         ),
