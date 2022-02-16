@@ -1,16 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
 import 'package:my_kisan/constant.dart';
-import 'package:my_kisan/screens/home_screen.dart';
-import 'package:my_kisan/screens/Login_Screen.dart';
-import 'package:my_kisan/screens/Maindrawer.dart';
 import 'package:my_kisan/screens/Otp_screen.dart';
-import 'package:my_kisan/screens/Signup_Screen.dart';
-import 'package:my_kisan/screens/Splash_screen.dart';
-import 'package:my_kisan/screens/home_screen.dart';
 
 enum MobileVerificationState {
   SHOW_MOBILE_FORM_STATE,
@@ -236,54 +229,17 @@ class _SignupScreenState extends State<SignupScreen> {
                                 content: Text(
                                     "User Already Exists . Login Please")));
                           } else {
-                            await _auth.verifyPhoneNumber(
-                                timeout: const Duration(seconds: 20),
-                                phoneNumber: "+91" + phonenumbercontroller.text,
-                                verificationCompleted:
-                                    (phoneAuthcredential) async {
-                                  setState(() {
-                                    showloading = false;
-                                  });
-                                },
-                                verificationFailed: (verificationFailed) async {
-                                  setState(() {
-                                    showloading = false;
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(verificationFailed
-                                              .message as String)));
-                                },
-                                codeSent:
-                                    (verificationid, resendingToken) async {
-                                  setState(() {
-                                    showloading = false;
-                                    currentstate = MobileVerificationState
-                                        .SHOW_OTP_FORM_STATE;
-                                    this.verificationi = verificationid;
-                                  });
-                                },
-                                codeAutoRetrievalTimeout:
-                                    (verificationId) async {
-                                  setState(() {
-                                    currentstate = MobileVerificationState
-                                        .SHOW_OTP_FORM_STATE;
-                                  });
-                                });
-
-                            if (currentstate ==
-                                MobileVerificationState.SHOW_OTP_FORM_STATE) {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => OtpScreen(
-                                        firstnamecontroller.text +
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => OtpScreen(
+                                        userInfoMap: userInfoMap,
+                                        phonenumber:
+                                            "+91" + phonenumbercontroller.text,
+                                        firstname: firstnamecontroller.text +
                                             lastnamecontroller.text,
-                                        "+91" + phonenumbercontroller.text,
-                                        verificationi,
-                                        userInfoMap)),
-                              );
-                            }
+                                      )),
+                            );
                           }
 
                           //   await Navigator.pushNamed(context, "/BottomBar");

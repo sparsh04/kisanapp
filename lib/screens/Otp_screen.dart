@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:my_kisan/Component/bottom_bar.dart';
 import 'package:my_kisan/accessories/sharedpref_helper.dart';
-
 import 'package:my_kisan/screens/Splash_screen.dart';
 import 'package:my_kisan/constant.dart';
 
 class OtpScreen extends StatefulWidget {
-  //const OtpScreen({Key? key}) : super(key: key);
-  String? verificationid, phonenumber, firstname;
-  Map<String, String> userInfoMap;
   OtpScreen(
-      this.firstname, this.phonenumber, this.verificationid, this.userInfoMap);
+      {Key? key,
+      required this.phonenumber,
+      required this.firstname,
+      required this.userInfoMap})
+      : super(key: key);
+  final String phonenumber, firstname;
+  final Map<String, String> userInfoMap;
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -22,6 +24,88 @@ class _OtpScreenState extends State<OtpScreen> {
   final otpcontroller = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
   bool showloading = false;
+  String currentText = "";
+  String verificationCode = "";
+  bool loading = false;
+  // String smsCode = "";
+  late int resendtoken;
+  void initState() {
+    verifyPhoneNumber();
+    // _listenOtp();
+    super.initState();
+  }
+
+  void verifyPhoneNumber() async {
+    String phoneNumber = widget.phonenumber;
+
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+          phoneNumber: phoneNumber,
+          verificationCompleted: (PhoneAuthCredential phoneAuthCredential) {
+            signInWithPhoneNumber(phoneAuthCredential);
+            showSnackBar("Verification Completed");
+          },
+          verificationFailed: (FirebaseAuthException exception) {
+            showSnackBar(exception.toString());
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            showSnackBar("OTP sent to your Phone Number");
+
+            if (mounted) {
+              setState(() {
+                verificationCode = verificationId;
+                resendtoken = resendToken!;
+              });
+            }
+            print(verificationCode);
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            if (mounted) {
+              setState(() {
+                verificationCode = verificationId;
+              });
+            }
+
+            // showSnackBar("Time out");
+          },
+          timeout: Duration(seconds: 60));
+    } catch (e) {
+      showSnackBar(e.toString());
+    }
+  }
+
+  void showSnackBar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text)),
+    );
+  }
+
+  Future<void> signInWithPhoneNumber(AuthCredential authCredential) async {
+    try {
+      FirebaseAuth.instance
+          .signInWithCredential(authCredential)
+          .then((value) async {
+        if (value.user != null) {
+          if (value.additionalUserInfo!.isNewUser) {
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(widget.phonenumber)
+                .set({...widget.userInfoMap, "uid": _auth.currentUser!.uid});
+            User? currentuser = await _auth.currentUser;
+
+            await currentuser!.updateDisplayName(widget.firstname);
+            await currentuser.updatePhotoURL(widget.userInfoMap['photourl']);
+          }
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => BottomBar(0)),
+              (route) => false);
+        }
+      });
+    } catch (e) {
+      showSnackBar(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,12 +227,11 @@ class _OtpScreenState extends State<OtpScreen> {
                     height: Height / 20,
                     minWidth: Width * 0.6 + 10,
                     onPressed: () {
-                      PhoneAuthCredential phoneAuthCredential =
+                      AuthCredential authCredential =
                           PhoneAuthProvider.credential(
-                              verificationId: widget.verificationid!,
+                              verificationId: verificationCode,
                               smsCode: otpcontroller.text);
-
-                      signInwithPhoneCredetial(phoneAuthCredential);
+                      signInWithPhoneNumber(authCredential);
                     },
                     color: Color(0xfffeda704),
                     shape: RoundedRectangleBorder(
@@ -188,12 +271,7 @@ class _OtpScreenState extends State<OtpScreen> {
         await FirebaseFirestore.instance
             .collection("users")
             .doc(widget.phonenumber)
-            .set(widget.userInfoMap);
-
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(widget.phonenumber)
-            .update({"uid": _auth.currentUser!.uid});
+            .set({...widget.userInfoMap, "uid": _auth.currentUser!.uid});
 
         User? currentuser = await _auth.currentUser;
         await currentuser!.updatePhoneNumber(phoneAuthCredential);

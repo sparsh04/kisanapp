@@ -1,15 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/screens/Otp_screen.dart';
-import 'package:my_kisan/screens/Login_Screen.dart';
-import 'package:my_kisan/screens/Maindrawer.dart';
-import 'package:my_kisan/screens/Otp_screen.dart';
 import 'package:my_kisan/screens/Signup_Screen.dart';
-import 'package:my_kisan/screens/Splash_screen.dart';
-import 'package:my_kisan/screens/home_screen.dart';
 
 enum MobileVerificationState {
   SHOW_MOBILE_FORM_STATE,
@@ -162,69 +156,51 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() {
                           showloading = true;
                         });
-
-                        final snapshot = await FirebaseFirestore.instance
-                            .collection("users")
-                            .doc("+91" + phonenumbercontroller.text)
-                            .get();
-
-                        if (phonenumbercontroller.text.length < 10 ||
-                            phonenumbercontroller.text.length > 10) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Enter a Valid Number")));
-                        } else if (phonenumbercontroller.text.length == 10 &&
-                            !snapshot.exists) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => SignupScreen()),
-                          );
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Please Signup first")));
-                        } else {
-                          await _auth.verifyPhoneNumber(
-                              phoneNumber: "+91" + phonenumbercontroller.text,
-                              verificationCompleted:
-                                  (phoneAuthcredential) async {
-                                setState(() {
-                                  showloading = false;
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .where('Phonenumber',
+                                isEqualTo: "+91" + phonenumbercontroller.text)
+                            .get()
+                            .then((value) => {
+                                  if (value.docs.isNotEmpty)
+                                    {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return OtpScreen(
+                                              userInfoMap: {},
+                                              phonenumber: "+91" +
+                                                  phonenumbercontroller.text,
+                                              firstname: '',
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    }
+                                  else
+                                    {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Please Signup First',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                letterSpacing: 0.5),
+                                          ),
+                                        ),
+                                      ),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return SignupScreen();
+                                          },
+                                        ),
+                                      )
+                                    }
                                 });
-                              },
-                              verificationFailed: (verificationFailed) async {
-                                setState(() {
-                                  showloading = false;
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(verificationFailed.message
-                                            as String)));
-                              },
-                              codeSent: (verificationid, resendingToken) async {
-                                setState(() {
-                                  showloading = false;
-                                  currentstate = MobileVerificationState
-                                      .SHOW_OTP_FORM_STATE;
-                                  this.verificationid = verificationid;
-                                });
-                              },
-                              codeAutoRetrievalTimeout:
-                                  (verificationId) async {});
-
-                          Map<String, String> userInfoMap = {};
-
-                          if (currentstate ==
-                              MobileVerificationState.SHOW_OTP_FORM_STATE) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OtpScreen(
-                                      '',
-                                      "+91" + phonenumbercontroller.text,
-                                      verificationid,
-                                      userInfoMap)),
-                            );
-                          }
-                        }
                       },
                       color: Color(0xfffeda704),
                       shape: RoundedRectangleBorder(

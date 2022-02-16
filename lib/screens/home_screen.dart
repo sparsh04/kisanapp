@@ -574,11 +574,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (snapshot.connectionState == ConnectionState.active) {
                       return Container(
                         // alignment: Alignment.center,
-                        height: 4 * 140.00,
+                        // height: 4 * 140.00,s
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: 3,
+                          itemCount: snapshot.data!.docs.length,
                           itemBuilder: (BuildContext context, int index) {
                             Map<String, dynamic> map =
                                 snapshot.data!.docs[index].data()
