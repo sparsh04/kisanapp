@@ -15,7 +15,7 @@ class CategoryRoundCard extends StatelessWidget {
       children: [
         Container(
           margin: EdgeInsets.only(left: 15, top: 10),
-          height: MediaQuery.of(context).size.height / 12,
+          height: MediaQuery.of(context).size.height / 13,
           width: MediaQuery.of(context).size.height * 0.1 - 10,
           // color: Colors.red,
           child: CircleAvatar(

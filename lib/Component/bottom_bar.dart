@@ -28,11 +28,22 @@ class _BottomBarState extends State<BottomBar> {
     super.initState();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    HomeScreen();
+    CategoryProduct();
+    SearchBar();
+    CustomProduct();
+    Drawer();
+  }
+
   List<Widget> screen = [
     HomeScreen(),
     CategoryProduct(),
     SearchBar(),
     CustomProduct(),
+    Drawer(),
   ];
 
   @override
@@ -42,6 +53,7 @@ class _BottomBarState extends State<BottomBar> {
         index: _selectedIndex,
         children: screen,
       ),
+      // body: screen[_selectedIndex],
       //child: screen[_selectedIndex]),
       bottomNavigationBar: Container(
           height: 60,

@@ -4,6 +4,8 @@ import "dart:core";
 class SharedPreferncehelper {
   static String userIdKey = "USERKEY";
   static String userNameKey = "USERNAMEKEY";
+  static String userlatitude = '20.37373';
+  static String userlongitude = '30.787281';
   static String displayNameKey = "USERDISPLAYNAMEKEY";
   static String userEmailKey = "USEREMAILKEY";
   static String userProfileKey = "USERPROFILEKEY";
@@ -35,7 +37,28 @@ class SharedPreferncehelper {
     return prefs.setString(userEmailKey, getUserEmail!);
   }
 
+  Future<bool> saveUserlatitude(double latitude) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setDouble(userlatitude, latitude);
+  }
+
+  Future<bool> saveUserlongitude(double longitude) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setDouble(userlongitude, longitude);
+  }
+
 //get data
+
+  Future<double?>? getlatitude() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(userlatitude);
+  }
+
+  Future<double?>? getlongitude() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(userlongitude);
+  }
+
   Future<String?>? getUSerName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userNameKey);
