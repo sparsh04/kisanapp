@@ -166,6 +166,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: TextFormField(
                             controller: phonenumbercontroller,
                             validator: mobilevalidtor,
+                            keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.grey[300],

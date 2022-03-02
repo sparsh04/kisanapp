@@ -6,6 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_kisan/Component/bottom_bar.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
 
+import '../constant.dart';
+
 void main() {
   runApp(SplashScreen());
 }
@@ -63,15 +65,16 @@ class StartState extends State<SplashScreen> {
       body: FutureBuilder(
           future: _onlaund(),
           builder: (context, snapshot) {
-            return Stack(
+            return Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(decoration: BoxDecoration()),
                 Center(
                   child: Container(
                     decoration: BoxDecoration(),
                     child: SvgPicture.asset("assets/icons/logo.svg"),
                   ),
                 ),
+                Container(child: Text("       Vegetables And Fruits",style: TextStyle(color: greencolor,fontSize: 20,fontWeight: FontWeight.bold),),),
+
               ],
             );
           }),
