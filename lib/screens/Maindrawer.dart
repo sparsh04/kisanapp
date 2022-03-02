@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_kisan/Component/bottom_bar.dart';
+import 'package:my_kisan/accessories/sharedpref_helper.dart';
 import 'package:my_kisan/constant.dart';
 import 'package:my_kisan/screens/Login_Screen.dart';
+import 'package:my_kisan/screens/credit.dart';
 import 'package:my_kisan/screens/orders.dart';
+import 'package:my_kisan/screens/subscription.dart';
+import 'package:my_kisan/screens/subscription_details.dart';
 import 'package:my_kisan/screens/wallet.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -15,6 +20,45 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   FirebaseAuth _auth = FirebaseAuth.instance;
+  var myName;
+  String? myname, mynumber;
+  var nmae;
+ bool isSubscribed = false ;
+  @override
+  void initState() {
+    nmae = FirebaseAuth.instance.currentUser!.displayName;
+    _fetch();
+    onScreenloaded();
+    super.initState();
+  }
+
+  onScreenloaded() async {
+    await getMyInfoFromSHaredPrefrences();
+    //getChatRooms();
+  }
+
+  getMyInfoFromSHaredPrefrences() async {
+    myName = await SharedPreferncehelper().getDisplayName();
+    mynumber = await SharedPreferncehelper().getUSerId();
+  }
+
+  _fetch() async {
+    final firebaseUser = await FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(firebaseUser.phoneNumber)
+          .get()
+          .then((ds) {
+        //     ls = ds.docs;
+        myname = ds.data()!['Firstname'];
+        isSubscribed = ds.data()!["isSubscribed"];
+        print(myname);
+      }).catchError((e) {
+        print(e);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +74,31 @@ class _MainDrawerState extends State<MainDrawer> {
                   ),
               accountName: Row(
                 children: [
-                  new Text(
-                    _auth.currentUser!.displayName as String,
+                  Text(
+                    myname != null
+                        ? myname
+                        : (myName != null
+                            ? myName
+                            : (nmae != null ? nmae : "User")),
+                    // _auth.currentUser!.displayName != ""
+                    //     ? _auth.currentUser!.displayName
+                    //     : "User",
                     style: new TextStyle(fontSize: 16.0),
                   ),
                 ],
               ),
               accountEmail: new Text(
-                _auth.currentUser!.phoneNumber as String,
+                mynumber != null
+                    ? myName as String
+                    : _auth.currentUser!.phoneNumber as String,
                 style: new TextStyle(fontSize: 16.0),
               ),
               currentAccountPicture: CircleAvatar(
                 radius: 30,
-                backgroundImage:
-                    NetworkImage(_auth.currentUser!.photoURL as String),
+                backgroundImage: AssetImage(
+                  "assets/images/user.png",
+                ),
+                //       NetworkImage(_auth.currentUser!.photoURL as String),
               ),
               otherAccountsPictures: <Widget>[],
             ),
@@ -54,6 +109,7 @@ class _MainDrawerState extends State<MainDrawer> {
         onTap: () {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => BottomBar(0)));
+
         },
         leading: Icon(
           Icons.home,
@@ -123,6 +179,39 @@ class _MainDrawerState extends State<MainDrawer> {
         ),
         title: Text(
           "Wallet",
+          style: new TextStyle(fontSize: 16.0, color: whitecolors),
+        ),
+      ),
+      ListTile(
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => isSubscribed ? SubscriptionDetails() : Subscription()));
+        },
+        leading: Icon(
+          Icons.account_balance_wallet_rounded,
+          size: 24,
+          color: Colors.white,
+        ),
+        title: Text(
+          "Subscription",
+          style: new TextStyle(fontSize: 16.0, color: whitecolors),
+        ),
+      ),
+      ListTile(
+        onTap: () {
+          // Navigator.pop(context);
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => Credit()));
+          //  Navigator.pushNamed(context, MyWallet.routName);
+        },
+        leading: Icon(
+          Icons.account_balance_wallet_rounded,
+          size: 24,
+          color: Colors.white,
+        ),
+        title: Text(
+          "Credits",
           style: new TextStyle(fontSize: 16.0, color: whitecolors),
         ),
       ),

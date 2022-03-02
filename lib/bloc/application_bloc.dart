@@ -6,7 +6,6 @@ import 'package:my_kisan/models/place.dart';
 import 'package:my_kisan/models/place_Search.dart';
 import 'package:my_kisan/screens/geolocator_Service.dart';
 import 'package:my_kisan/services/places_service.dart';
-
 class ApplicationBloc with ChangeNotifier {
   final geolocatorserive = GeolocatorService();
   final placeService = PlaceService();

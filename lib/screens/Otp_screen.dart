@@ -14,7 +14,7 @@ class OtpScreen extends StatefulWidget {
       required this.userInfoMap})
       : super(key: key);
   final String phonenumber, firstname;
-  final Map<String, String> userInfoMap;
+  final Map<String, dynamic> userInfoMap;
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -100,6 +100,9 @@ class _OtpScreenState extends State<OtpScreen> {
               context,
               MaterialPageRoute(builder: (context) => BottomBar(0)),
               (route) => false);
+          SharedPreferncehelper().saveUserId(widget.phonenumber);
+          SharedPreferncehelper().saveDisplayName(widget.firstname);
+          SharedPreferncehelper.saveUserLoggedInSharedPreference(true);
         }
       });
     } catch (e) {

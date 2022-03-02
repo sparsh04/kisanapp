@@ -198,7 +198,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             showloading = true;
                           });
 
-                          Map<String, String> userInfoMap = {
+                          Map<String, dynamic> userInfoMap = {
                             "Firstname": firstnamecontroller.text,
                             "lastname": lastnamecontroller.text,
                             "Fullname": firstnamecontroller.text +
@@ -207,6 +207,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             'photourl':
                                 'https://i0.wp.com/i1.wp.com/clarkstontolldentalpractice.com/wp-content/uploads/2020/06/default-img-2-1.jpg',
                             'uid': '',
+                            "isSubscribed": false,
                           };
 
                           final snapshot = await FirebaseFirestore.instance

@@ -31,7 +31,7 @@ class _CartScreenState extends State<CartScreen> {
     WidgetsFlutterBinding.ensureInitialized();
     getcart();
     getcoupons();
-
+    getlocation();
     super.initState();
   }
 
@@ -221,7 +221,7 @@ class _CartScreenState extends State<CartScreen> {
     // print(place);
     address = '${place.subAdministrativeArea},${place.administrativeArea}';
     subaddress = '${place.postalCode},${place.street},';
-    //setState(() {});
+    setState(() {});
   }
 
   //  FutureBuilder(
@@ -412,7 +412,7 @@ class _CartScreenState extends State<CartScreen> {
                                       style: TextStyle(fontSize: 14),
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        hintText: "Enter Coupan code",
+                                        hintText: "Enter Coupon code",
                                       ),
                                     ),
                                   ),
@@ -487,221 +487,221 @@ class _CartScreenState extends State<CartScreen> {
                                                 )
                                               ],
                                             ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return Dialog(
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20)),
-                                                        elevation: 16,
-                                                        child: SizedBox(
-                                                          height: 200,
-                                                          // decoration: BoxDecoration(
-                                                          //   border: Border.all(),
-                                                          // ),
-                                                          child: Column(
-                                                            // mainAxisAlignment: MainAxisAlignment.start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              const SizedBox(
-                                                                height: 20,
-                                                              ),
-                                                              const Text(
-                                                                "Address",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        20),
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 20,
-                                                              ),
-                                                              Container(
-                                                                margin: const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    10,
-                                                                    0,
-                                                                    10,
-                                                                    0),
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        10,
-                                                                        0,
-                                                                        10,
-                                                                        0),
-                                                                child: Column(
-                                                                  children: [
-                                                                    Row(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        //here
-                                                                        Center(
-                                                                          child:
-                                                                              Container(
-                                                                            padding:
-                                                                                EdgeInsets.symmetric(horizontal: 10),
-                                                                            alignment:
-                                                                                Alignment.center,
-                                                                            height:
-                                                                                35,
-                                                                            width:
-                                                                                MediaQuery.of(context).size.width / 1.5,
-                                                                            decoration:
-                                                                                BoxDecoration(border: Border.all(color: orangecolor), borderRadius: BorderRadius.circular(10)),
-                                                                            child:
-                                                                                TextField(
-                                                                              controller: addresscontroller,
-                                                                              style: TextStyle(fontSize: 14),
-                                                                              decoration: InputDecoration(
-                                                                                border: InputBorder.none,
-                                                                                hintText: "Address",
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      height:
-                                                                          11,
-                                                                    ),
-                                                                    Row(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        //here
-                                                                        Center(
-                                                                          child:
-                                                                              Container(
-                                                                            padding:
-                                                                                EdgeInsets.symmetric(horizontal: 10),
-                                                                            alignment:
-                                                                                Alignment.center,
-                                                                            height:
-                                                                                35,
-                                                                            width:
-                                                                                MediaQuery.of(context).size.width / 1.5,
-                                                                            decoration:
-                                                                                BoxDecoration(border: Border.all(color: orangecolor), borderRadius: BorderRadius.circular(10)),
-                                                                            child:
-                                                                                TextField(
-                                                                              controller: subaddresscontroller,
-                                                                              style: TextStyle(fontSize: 14),
-                                                                              decoration: InputDecoration(
-                                                                                border: InputBorder.none,
-                                                                                hintText: "Sub-Address",
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              // const SizedBox(
-                                                              //   height: 22,
-                                                              // ),
-                                                              // Row(
-                                                              //   crossAxisAlignment:
-                                                              //       CrossAxisAlignment
-                                                              //           .center,
-                                                              //   children: [
-                                                              //     //here
-                                                              //     Center(
-                                                              //       child:
-                                                              //           Container(
-                                                              //         padding: EdgeInsets.symmetric(
-                                                              //             horizontal:
-                                                              //                 10),
-                                                              //         alignment:
-                                                              //             Alignment
-                                                              //                 .center,
-                                                              //         height:
-                                                              //             35,
-                                                              //         width: MediaQuery.of(context)
-                                                              //                 .size
-                                                              //                 .width /
-                                                              //             1.5,
-                                                              //         decoration: BoxDecoration(
-                                                              //             border: Border.all(
-                                                              //                 color:
-                                                              //                     orangecolor),
-                                                              //             borderRadius:
-                                                              //                 BorderRadius.circular(10)),
-                                                              //         child:
-                                                              //             TextField(
-                                                              //           // controller: couponcontroller,
-                                                              //           style: TextStyle(
-                                                              //               fontSize:
-                                                              //                   14),
-                                                              //           decoration:
-                                                              //               InputDecoration(
-                                                              //             border:
-                                                              //                 InputBorder.none,
-                                                              //             hintText:
-                                                              //                 "Address",
-                                                              //           ),
-                                                              //         ),
-                                                              //       ),
-                                                              //     ),
-                                                              //   ],
-                                                              // ),
-                                                              TextButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    setState(
-                                                                        () {
-                                                                      address =
-                                                                          addresscontroller
-                                                                              .text;
-                                                                      subaddress =
-                                                                          subaddresscontroller
-                                                                              .text;
-                                                                    });
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child:
-                                                                      const Text(
-                                                                    "Submit",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            15),
-                                                                  )),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    });
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 30),
-                                                child: Column(
-                                                  children: [
-                                                    Text(
-                                                      "CHANGE",
-                                                      style: TextStyle(
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                            // GestureDetector(
+                                            //   onTap: () {
+                                            //     showDialog(
+                                            //         context: context,
+                                            //         builder: (context) {
+                                            //           return Dialog(
+                                            //             shape: RoundedRectangleBorder(
+                                            //                 borderRadius:
+                                            //                     BorderRadius
+                                            //                         .circular(
+                                            //                             20)),
+                                            //             elevation: 16,
+                                            //             child: SizedBox(
+                                            //               height: 200,
+                                            //               // decoration: BoxDecoration(
+                                            //               //   border: Border.all(),
+                                            //               // ),
+                                            //               child: Column(
+                                            //                 // mainAxisAlignment: MainAxisAlignment.start,
+                                            //                 crossAxisAlignment:
+                                            //                     CrossAxisAlignment
+                                            //                         .center,
+                                            //                 children: [
+                                            //                   const SizedBox(
+                                            //                     height: 20,
+                                            //                   ),
+                                            //                   const Text(
+                                            //                     "Address",
+                                            //                     style: TextStyle(
+                                            //                         fontSize:
+                                            //                             20),
+                                            //                   ),
+                                            //                   const SizedBox(
+                                            //                     height: 20,
+                                            //                   ),
+                                            //                   Container(
+                                            //                     margin: const EdgeInsets
+                                            //                             .fromLTRB(
+                                            //                         10,
+                                            //                         0,
+                                            //                         10,
+                                            //                         0),
+                                            //                     padding:
+                                            //                         const EdgeInsets
+                                            //                                 .fromLTRB(
+                                            //                             10,
+                                            //                             0,
+                                            //                             10,
+                                            //                             0),
+                                            //                     child: Column(
+                                            //                       children: [
+                                            //                         Row(
+                                            //                           crossAxisAlignment:
+                                            //                               CrossAxisAlignment
+                                            //                                   .center,
+                                            //                           children: [
+                                            //                             //here
+                                            //                             Center(
+                                            //                               child:
+                                            //                                   Container(
+                                            //                                 padding:
+                                            //                                     EdgeInsets.symmetric(horizontal: 10),
+                                            //                                 alignment:
+                                            //                                     Alignment.center,
+                                            //                                 height:
+                                            //                                     35,
+                                            //                                 width:
+                                            //                                     MediaQuery.of(context).size.width / 1.5,
+                                            //                                 decoration:
+                                            //                                     BoxDecoration(border: Border.all(color: orangecolor), borderRadius: BorderRadius.circular(10)),
+                                            //                                 child:
+                                            //                                     TextField(
+                                            //                                   controller: addresscontroller,
+                                            //                                   style: TextStyle(fontSize: 14),
+                                            //                                   decoration: InputDecoration(
+                                            //                                     border: InputBorder.none,
+                                            //                                     hintText: "Address",
+                                            //                                   ),
+                                            //                                 ),
+                                            //                               ),
+                                            //                             ),
+                                            //                           ],
+                                            //                         ),
+                                            //                         const SizedBox(
+                                            //                           height:
+                                            //                               11,
+                                            //                         ),
+                                            //                         Row(
+                                            //                           crossAxisAlignment:
+                                            //                               CrossAxisAlignment
+                                            //                                   .center,
+                                            //                           children: [
+                                            //                             //here
+                                            //                             Center(
+                                            //                               child:
+                                            //                                   Container(
+                                            //                                 padding:
+                                            //                                     EdgeInsets.symmetric(horizontal: 10),
+                                            //                                 alignment:
+                                            //                                     Alignment.center,
+                                            //                                 height:
+                                            //                                     35,
+                                            //                                 width:
+                                            //                                     MediaQuery.of(context).size.width / 1.5,
+                                            //                                 decoration:
+                                            //                                     BoxDecoration(border: Border.all(color: orangecolor), borderRadius: BorderRadius.circular(10)),
+                                            //                                 child:
+                                            //                                     TextField(
+                                            //                                   controller: subaddresscontroller,
+                                            //                                   style: TextStyle(fontSize: 14),
+                                            //                                   decoration: InputDecoration(
+                                            //                                     border: InputBorder.none,
+                                            //                                     hintText: "Sub-Address",
+                                            //                                   ),
+                                            //                                 ),
+                                            //                               ),
+                                            //                             ),
+                                            //                           ],
+                                            //                         ),
+                                            //                       ],
+                                            //                     ),
+                                            //                   ),
+                                            //                   // const SizedBox(
+                                            //                   //   height: 22,
+                                            //                   // ),
+                                            //                   // Row(
+                                            //                   //   crossAxisAlignment:
+                                            //                   //       CrossAxisAlignment
+                                            //                   //           .center,
+                                            //                   //   children: [
+                                            //                   //     //here
+                                            //                   //     Center(
+                                            //                   //       child:
+                                            //                   //           Container(
+                                            //                   //         padding: EdgeInsets.symmetric(
+                                            //                   //             horizontal:
+                                            //                   //                 10),
+                                            //                   //         alignment:
+                                            //                   //             Alignment
+                                            //                   //                 .center,
+                                            //                   //         height:
+                                            //                   //             35,
+                                            //                   //         width: MediaQuery.of(context)
+                                            //                   //                 .size
+                                            //                   //                 .width /
+                                            //                   //             1.5,
+                                            //                   //         decoration: BoxDecoration(
+                                            //                   //             border: Border.all(
+                                            //                   //                 color:
+                                            //                   //                     orangecolor),
+                                            //                   //             borderRadius:
+                                            //                   //                 BorderRadius.circular(10)),
+                                            //                   //         child:
+                                            //                   //             TextField(
+                                            //                   //           // controller: couponcontroller,
+                                            //                   //           style: TextStyle(
+                                            //                   //               fontSize:
+                                            //                   //                   14),
+                                            //                   //           decoration:
+                                            //                   //               InputDecoration(
+                                            //                   //             border:
+                                            //                   //                 InputBorder.none,
+                                            //                   //             hintText:
+                                            //                   //                 "Address",
+                                            //                   //           ),
+                                            //                   //         ),
+                                            //                   //       ),
+                                            //                   //     ),
+                                            //                   //   ],
+                                            //                   // ),
+                                            //                   TextButton(
+                                            //                       onPressed:
+                                            //                           () {
+                                            //                         setState(
+                                            //                             () {
+                                            //                           address =
+                                            //                               addresscontroller
+                                            //                                   .text;
+                                            //                           subaddress =
+                                            //                               subaddresscontroller
+                                            //                                   .text;
+                                            //                         });
+                                            //                         Navigator.pop(
+                                            //                             context);
+                                            //                       },
+                                            //                       child:
+                                            //                           const Text(
+                                            //                         "Submit",
+                                            //                         style: TextStyle(
+                                            //                             color: Colors
+                                            //                                 .black,
+                                            //                             fontSize:
+                                            //                                 15),
+                                            //                       )),
+                                            //                 ],
+                                            //               ),
+                                            //             ),
+                                            //           );
+                                            //         });
+                                            //   },
+                                            //   child: Padding(
+                                            //     padding: const EdgeInsets.only(
+                                            //         right: 30),
+                                            //     child: Column(
+                                            //       children: [
+                                            //         Text(
+                                            //           "CHANGE",
+                                            //           style: TextStyle(
+                                            //             color: Colors.grey[600],
+                                            //           ),
+                                            //         )
+                                            //       ],
+                                            //     ),
+                                            //   ),
+                                            // ),
                                           ],
                                         ),
                                         Divider(
@@ -729,36 +729,47 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
-                                child: MaterialButton(
-                                  height: Height / 22,
-                                  minWidth: Width * 0.8,
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) => PaymentScreen(
-                                                address:
-                                                    addresscontroller.text == ""
-                                                        ? address
-                                                        : addresscontroller
-                                                            .text,
-                                                subaddress: subaddresscontroller
-                                                            .text ==
-                                                        ""
-                                                    ? subaddress
-                                                    : subaddresscontroller.text,
-                                                off: off,
-                                                total: total,
-                                                items: items)));
-                                  },
-                                  color: Color(0xfffeda704),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Text(
-                                    "Make Payment",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  ),
-                                ),
+                                child: address != null
+                                    ? MaterialButton(
+                                        height: Height / 22,
+                                        minWidth: Width * 0.8,
+                                        onPressed: () {
+                                          Navigator.of(context).push(MaterialPageRoute(
+                                              builder: (context) => PaymentScreen(
+                                                  longitude: position.longitude,
+                                                  latitude: position.latitude,
+                                                  address: addresscontroller
+                                                              .text ==
+                                                          ""
+                                                      ? address
+                                                      : addresscontroller.text,
+                                                  subaddress:
+                                                      subaddresscontroller
+                                                                  .text ==
+                                                              ""
+                                                          ? subaddress
+                                                          : subaddresscontroller
+                                                              .text,
+                                                  off: off,
+                                                  total: total,
+                                                  items: items)));
+                                        },
+                                        color: Color(0xfffeda704),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Text(
+                                          "Make Payment",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 100,
+                                        child:
+                                            Center(child: const CircularProgressIndicator()),
+                                      ),
                               ),
                             ],
                           ),
