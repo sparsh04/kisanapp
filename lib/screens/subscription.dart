@@ -68,9 +68,9 @@ class _SubscriptionState extends State<Subscription> {
                 height: 30,
               ),
               SizedBox(
-                height: 300,
+                height: screenHeight(context) /1.8,
                 child: ListView.builder(
-                    reverse: true,
+                    // shrinkWrap: true,
                     itemCount: subsList.length,
                     itemBuilder: (context, index) {
                       return Column(
@@ -81,7 +81,7 @@ class _SubscriptionState extends State<Subscription> {
                             },
                             child: Container(
                               width: screenWidth(context) - 30,
-                              height: 80,
+                              height: choose == index ? 120 : 80,
                               decoration: BoxDecoration(
                                   color: choose == index
                                       ? greencolor
@@ -116,13 +116,18 @@ class _SubscriptionState extends State<Subscription> {
                                                 ? Colors.white
                                                 : Colors.black),
                                       ),
-                                      Text(
-                                        subsList[index]["description"],
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: choose == index
-                                                ? Colors.white
-                                                : Colors.black54),
+                                      Flexible(
+                                        child: SizedBox(width: 120, height:choose == index ?  80 : 30,
+                                          child: Text(
+                                            subsList[index]["description"],overflow: TextOverflow.ellipsis, maxLines: choose == index ? 6 : 1,
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: choose == index
+                                                    ? Colors.white
+                                                    : Colors.black54),
+                                          ),
+                                        ),
                                       )
                                     ],
                                   ),
