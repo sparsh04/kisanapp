@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           builder: (context) {
                                             return OtpScreen(
                                               userInfoMap: {},
-                                              phonenumber: "+91" +
+                                              phoneNumber: "+91" +
                                                   phonenumbercontroller.text,
                                               firstname: '',
                                             );

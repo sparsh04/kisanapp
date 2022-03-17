@@ -9,11 +9,11 @@ import 'package:my_kisan/constant.dart';
 class OtpScreen extends StatefulWidget {
   OtpScreen(
       {Key? key,
-      required this.phonenumber,
+      required this.phoneNumber,
       required this.firstname,
       required this.userInfoMap})
       : super(key: key);
-  final String phonenumber, firstname;
+  final String phoneNumber, firstname;
   final Map<String, dynamic> userInfoMap;
 
   @override
@@ -21,9 +21,9 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final otpcontroller = TextEditingController();
+  final otpController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
-  bool showloading = false;
+  bool showLoading = false;
   String currentText = "";
   String verificationCode = "";
   bool loading = false;
@@ -36,13 +36,14 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void verifyPhoneNumber() async {
-    String phoneNumber = widget.phonenumber;
+    String phoneNumber = widget.phoneNumber;
 
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
           phoneNumber: phoneNumber,
           verificationCompleted: (PhoneAuthCredential phoneAuthCredential) {
             signInWithPhoneNumber(phoneAuthCredential);
+
             showSnackBar("Verification Completed");
           },
           verificationFailed: (FirebaseAuthException exception) {
@@ -86,10 +87,11 @@ class _OtpScreenState extends State<OtpScreen> {
           .signInWithCredential(authCredential)
           .then((value) async {
         if (value.user != null) {
+
           if (value.additionalUserInfo!.isNewUser) {
             await FirebaseFirestore.instance
                 .collection("users")
-                .doc(widget.phonenumber)
+                .doc(widget.phoneNumber)
                 .set({...widget.userInfoMap, "uid": _auth.currentUser!.uid});
             User? currentuser = await _auth.currentUser;
 
@@ -100,7 +102,7 @@ class _OtpScreenState extends State<OtpScreen> {
               context,
               MaterialPageRoute(builder: (context) => BottomBar(0)),
               (route) => false);
-          SharedPreferncehelper().saveUserId(widget.phonenumber);
+          SharedPreferncehelper().saveUserId(widget.phoneNumber);
           SharedPreferncehelper().saveDisplayName(widget.firstname);
           SharedPreferncehelper.saveUserLoggedInSharedPreference(true);
         }
@@ -206,7 +208,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           height: Height / 20,
                           width: Width * 0.6 + 10,
                           child: TextFormField(
-                            controller: otpcontroller,
+                            controller: otpController,
                             decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.grey[300],
@@ -233,7 +235,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       AuthCredential authCredential =
                           PhoneAuthProvider.credential(
                               verificationId: verificationCode,
-                              smsCode: otpcontroller.text);
+                              smsCode: otpController.text);
                       signInWithPhoneNumber(authCredential);
                     },
                     color: Color(0xfffeda704),
@@ -258,7 +260,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void signInwithPhoneCredetial(PhoneAuthCredential phoneAuthCredential) async {
     setState(() {
-      showloading = true;
+      showLoading = true;
     });
 
     try {
@@ -267,13 +269,14 @@ class _OtpScreenState extends State<OtpScreen> {
 
       final snapshot = await FirebaseFirestore.instance
           .collection("users")
-          .doc(widget.phonenumber)
+          .doc(widget.phoneNumber)
           .get();
 
       if (!snapshot.exists && widget.userInfoMap != Null) {
+        print("SignedUP CALLED");
         await FirebaseFirestore.instance
             .collection("users")
-            .doc(widget.phonenumber)
+            .doc(widget.phoneNumber)
             .set({...widget.userInfoMap, "uid": _auth.currentUser!.uid});
 
         User? currentuser = await _auth.currentUser;
@@ -288,7 +291,7 @@ class _OtpScreenState extends State<OtpScreen> {
       //    _auth.currentUser.updateDisplayName
 
       setState(() {
-        showloading = false;
+        showLoading = false;
       });
 
       if (authCredential.user != null) {
@@ -301,7 +304,7 @@ class _OtpScreenState extends State<OtpScreen> {
       SharedPreferncehelper.saveUserLoggedInSharedPreference(true);
     } on FirebaseAuthException catch (e) {
       setState(() {
-        showloading = false;
+        showLoading = false;
       });
 
       ScaffoldMessenger.of(context)

@@ -235,7 +235,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               MaterialPageRoute(
                                   builder: (context) => OtpScreen(
                                         userInfoMap: userInfoMap,
-                                        phonenumber:
+                                        phoneNumber:
                                             "+91" + phonenumbercontroller.text,
                                         firstname: firstnamecontroller.text +
                                             lastnamecontroller.text,
